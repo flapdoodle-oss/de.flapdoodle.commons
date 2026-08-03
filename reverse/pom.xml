@@ -9,14 +9,22 @@
         <version>1.0.2-SNAPSHOT</version>
     </parent>
 
-    <name>Flapdoodle Commons Graph</name>
-    <artifactId>de.flapdoodle.commons.graph</artifactId>
+    <name>Flapdoodle Commons Reverse</name>
+    <description>a simple way to build an init-like system</description>
+    <artifactId>de.flapdoodle.commons.reverse</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>1.4.0</version>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.graph</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.types</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.reflection</artifactId>
         </dependency>
 
         <dependency>
@@ -24,12 +32,9 @@
             <artifactId>de.flapdoodle.commons.testdoc</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

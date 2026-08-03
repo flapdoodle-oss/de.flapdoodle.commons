@@ -433,7 +433,22 @@
             </dependency>
             <dependency>
                 <groupId>de.flapdoodle.commons</groupId>
+                <artifactId>de.flapdoodle.commons.types</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.flapdoodle.commons</groupId>
                 <artifactId>de.flapdoodle.commons.testdoc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.flapdoodle.commons</groupId>
+                <artifactId>de.flapdoodle.commons.reflection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.flapdoodle.commons</groupId>
+                <artifactId>de.flapdoodle.commons.graph</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -460,6 +475,13 @@
                 <groupId>org.nanohttpd</groupId>
                 <artifactId>nanohttpd</artifactId>
                 <version>2.3.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>guru.nidi</groupId>
+                <artifactId>graphviz-java</artifactId>
+                <version>0.18.1</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -521,5 +543,6 @@
         <module>hash</module>
         <module>compare</module>
         <module>graph</module>
+        <module>reverse</module>
     </modules>
 </project>
