@@ -21,4 +21,5 @@ following modules might be useful:
 - checks - guava Precondition dependency free replacement
 - [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
 - [net](net/docs/HowTo.md) - network utilities
+- [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving
  

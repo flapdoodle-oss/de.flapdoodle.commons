@@ -11,20 +11,6 @@
     <name>Flapdoodle Commons Net</name>
     <artifactId>de.flapdoodle.commons.net</artifactId>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <de.flapdoodle.testdoc.destination>${project.basedir}/docs</de.flapdoodle.testdoc.destination>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>de.flapdoodle.commons</groupId>

@@ -1,0 +1,38 @@
+digraph "graph" {
+	rankdir=LR;
+
+	"A";
+	"C";
+	subgraph cluster_1 {
+		label = "One";
+		"One:x"[ label="x" ];
+		"One:y"[ label="y" ];
+		"One:z"[ label="z" ];
+
+		"One:x" -> "One:y";
+		"One:y" -> "One:z";
+	}
+	"One.in";
+	"One.out";
+	subgraph cluster_2 {
+		label = "Other";
+		"Other:x"[ label="x" ];
+		"Other:y"[ label="y" ];
+		"Other:z"[ label="z" ];
+
+		"Other:x" -> "Other:y";
+		"Other:y" -> "Other:z";
+	}
+	"Other.in";
+	"Other.out";
+
+	"A" -> "C";
+	"A" -> "One.in";
+	"A" -> "Other.in";
+	"One:z" -> "One.out";
+	"One.in" -> "One:x";
+	"One.out" -> "C";
+	"Other:z" -> "Other.out";
+	"Other.in" -> "Other:x";
+	"Other.out" -> "C";
+}

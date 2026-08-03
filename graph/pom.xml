@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.flapdoodle.commons</groupId>
+        <artifactId>de.flapdoodle.commons</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+    </parent>
+
+    <name>Flapdoodle Commons Graph</name>
+    <artifactId>de.flapdoodle.commons.graph</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.testdoc</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <version>0.18.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
