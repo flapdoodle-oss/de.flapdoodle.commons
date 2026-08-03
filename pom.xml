@@ -5,7 +5,7 @@
     <groupId>de.flapdoodle.commons</groupId>
     <artifactId>de.flapdoodle.commons</artifactId>
     <name>Flapdoodle Commons</name>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <description>flapdoodle commons</description>
@@ -32,7 +32,7 @@
         <connection>scm:git:git@github.com:flapdoodle-oss/de.flapdoodle.commons.git</connection>
         <developerConnection>scm:git:git@github.com:flapdoodle-oss/de.flapdoodle.commons.git</developerConnection>
         <url>git@github.com:flapdoodle-oss/de.flapdoodle.commons.git</url>
-        <tag>HEAD</tag>
+        <tag>de.flapdoodle.commons-1.1.0</tag>
     </scm>
 
 
