@@ -8,6 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Flapdoodle Commons Comparators</name>
     <artifactId>de.flapdoodle.commons.compare</artifactId>
 
     <dependencies>

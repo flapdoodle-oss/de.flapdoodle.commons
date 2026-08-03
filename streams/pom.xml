@@ -8,6 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Flapdoodle Commons Streams</name>
     <artifactId>de.flapdoodle.commons.streams</artifactId>
 
     <dependencies>

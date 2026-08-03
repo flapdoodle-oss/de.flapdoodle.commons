@@ -8,6 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Flapdoodle Commons Hash</name>
     <artifactId>de.flapdoodle.commons.hash</artifactId>
 
     <dependencies>

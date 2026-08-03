@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <name>Flapdoodle Commons Checks</name>
     <artifactId>de.flapdoodle.commons.checks</artifactId>
 
 
