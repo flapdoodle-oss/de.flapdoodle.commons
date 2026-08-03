@@ -13,7 +13,7 @@ Stable (Maven Central Repository, Released: 03.08.2026 - wait 24hrs for [maven c
 	<dependency>
 		<groupId>de.flapdoodle.commons</groupId>
 		<artifactId>de.flapdoodle.commons.[modulename]></artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0</version>
 	</dependency>
 
 following modules might be useful:
