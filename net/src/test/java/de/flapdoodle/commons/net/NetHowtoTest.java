@@ -19,6 +19,7 @@ package de.flapdoodle.commons.net;
 import de.flapdoodle.commons.testdoc.Recorder;
 import de.flapdoodle.commons.testdoc.Recording;
 import de.flapdoodle.commons.testdoc.TabSize;
+import fi.iki.elonen.NanoHTTPD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -66,7 +67,7 @@ class NetHowtoTest {
 
 	@Test
 	public void acceptAnySSLCertificate() throws IOException, NoSuchAlgorithmException, KeyManagementException {
-		HttpServers.Listener listener = session -> {
+		HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 			if (session.getUri().equals("/test")) {
 				return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 			}

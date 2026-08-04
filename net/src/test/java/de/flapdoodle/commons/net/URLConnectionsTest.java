@@ -52,14 +52,14 @@ class URLConnectionsTest {
 		public void downloadIntoByteArray(int blocks) throws IOException {
 			String content=String.join("", Collections.nCopies(blocks, UUID.randomUUID().toString()));
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(Net.freeServerPort(), listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(Net.freeServerPort(), listener)) {
 				URLConnection connection = URLConnections.urlConnectionOf(server.urlOf("test"));
 				byte[] response = URLConnections.downloadIntoByteArray(connection);
 
@@ -76,14 +76,14 @@ class URLConnectionsTest {
 			String content=String.join("", Collections.nCopies(blocks, UUID.randomUUID().toString()));
 			Path tempFile = tempDir.resolve("tempFile");
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(Net.freeServerPort(), listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(Net.freeServerPort(), listener)) {
 				URLConnection connection = URLConnections.urlConnectionOf(server.urlOf("test"));
 				URLConnections.downloadIntoFile(connection, tempFile, (url, bytesCopied, contentLength) -> {
 
@@ -104,7 +104,7 @@ class URLConnectionsTest {
 			Path destination = Files.createTempFile("moveToThisFile", "");
 			Files.delete(destination);
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(httpPort, (session) -> Optional.empty())) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(httpPort, (session) -> Optional.empty())) {
 				URLConnection connection = new URL("http://localhost:123/toLong?foo=bar").openConnection();
 				URLConnections.downloadTo(connection, destination, url -> {
 					Path downloadMock = Files.createTempFile("moveThis", "");
@@ -159,7 +159,7 @@ class URLConnectionsTest {
 			String content=String.join("", Collections.nCopies(blocks*1000, UUID.randomUUID().toString()));
 			long contentLengt = content.getBytes(StandardCharsets.UTF_8).length;
 
-			HttpServers.Listener listener=(session) -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener=(session) -> {
 				if (session.getUri().equals("/download")) {
 					return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 				}
@@ -168,7 +168,7 @@ class URLConnectionsTest {
 
 			List<Long> downloadSizes = new ArrayList<>();
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(httpPort, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(httpPort, listener)) {
 				URLConnection connection = new URL("http://localhost:"+httpPort+"/download?foo=bar").openConnection();
 
 				URLConnections.DownloadCopyListener copyListener=(url, bytesCopied, downloadContentLength) -> {
@@ -205,7 +205,7 @@ class URLConnectionsTest {
 			String content=String.join("", Collections.nCopies(blocks*1000, UUID.randomUUID().toString()));
 			long contentLengt = content.getBytes(StandardCharsets.UTF_8).length;
 
-			HttpServers.Listener listener=(session) -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener=(session) -> {
 				if (session.getUri().equals("/download")) {
 					return Optional.of(HttpServers.chunkedResponse(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 				}
@@ -214,7 +214,7 @@ class URLConnectionsTest {
 
 			List<Long> downloadSizes = new ArrayList<>();
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(httpPort, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(httpPort, listener)) {
 				URLConnection connection = new URL("http://localhost:"+httpPort+"/download?foo=bar").openConnection();
 
 				URLConnections.DownloadCopyListener copyListener=(url, bytesCopied, downloadContentLength) -> {
@@ -254,7 +254,7 @@ class URLConnectionsTest {
 			String content=String.join("", Collections.nCopies(blocks*1000, UUID.randomUUID().toString()));
 			long contentLengt = content.getBytes(StandardCharsets.UTF_8).length;
 
-			HttpServers.Listener listener=(session) -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener=(session) -> {
 				if (session.getUri().equals("/toShort")) {
 					return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8), content.getBytes(StandardCharsets.UTF_8).length*2));
 				}
@@ -264,7 +264,7 @@ class URLConnectionsTest {
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(httpPort, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(httpPort, listener)) {
 
 				try {
 					URLConnection connection = new URL("http://localhost:"+httpPort+"/toShort?foo=bar").openConnection();
@@ -298,14 +298,14 @@ class URLConnectionsTest {
 			String content=String.join("", Collections.nCopies(blocks*1000, UUID.randomUUID().toString()));
 			long contentLengt = content.getBytes(StandardCharsets.UTF_8).length;
 
-			HttpServers.Listener listener=(session) -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener=(session) -> {
 				if (session.getUri().equals("/stuff")) {
 					return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(httpPort, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(httpPort, listener)) {
 				URLConnection connection = new URL("http://localhost:"+httpPort+"/stuff").openConnection();
 				URLConnections.downloadIntoTempFile(connection, (url, bytesCopied, downloadContentLength) -> {
 					assertThat(downloadContentLength).isEqualTo(contentLengt);
@@ -326,14 +326,14 @@ class URLConnectionsTest {
 		
 		@Test
 		public void connectToHttpServer() throws IOException {
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(Net.freeServerPort(), listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(Net.freeServerPort(), listener)) {
 				URLConnection connection = URLConnections.urlConnectionOf(server.urlOf("test"));
 				byte[] response = URLConnections.downloadIntoByteArray(connection);
 
@@ -347,14 +347,14 @@ class URLConnectionsTest {
 		public void connectToHttpServerWithProxy() throws IOException {
 			int port = Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("http://localhost:" + port + "/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(port, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(port, listener)) {
 				URLConnection connection = URLConnections.urlConnectionOf(server.urlOf("test"),
 					Proxys.httpProxy(server.getHostname(), server.getListeningPort()));
 
@@ -374,7 +374,7 @@ class URLConnectionsTest {
 			String password = "passwd";
 			String authHeader = new String(Base64.getEncoder().encode((username + ":" + password).getBytes()));
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				String authorization = session.getHeaders().get("proxy-authorization");
 				if (authorization == null || !authorization.equals("Basic " + authHeader)) {
 					NanoHTTPD.Response response = HttpServers.response(401, "text/text", "protected".getBytes(StandardCharsets.UTF_8));
@@ -388,7 +388,7 @@ class URLConnectionsTest {
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(port, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(port, listener)) {
 				URLConnection connection = URLConnections.urlConnectionOf(server.urlOf("test"),
 					Proxys.httpProxy(server.getHostname(), server.getListeningPort(), username, password));
 
@@ -405,14 +405,14 @@ class URLConnectionsTest {
 		public void connectToHttpServerWithProxyBecauseSystemPropertiesAreSet() throws IOException {
 			int port = Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("http://localhost:" + port + "/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(port, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(port, listener)) {
 				System.setProperty("http.proxyHost", server.getHostname());
 				System.setProperty("http.proxyPort", "" + server.getListeningPort());
 				System.setProperty("http.nonProxyHosts", "");
@@ -435,14 +435,14 @@ class URLConnectionsTest {
 		public void connectToHttpServerWithProxyFromEnv() throws IOException {
 			int port = 12345; //Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("http://localhost:" + port + "/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpServer server = new HttpServers.HttpServer(port, listener)) {
+			try (HttpServers.HttpServer server = HttpServers.httpServer(port, listener)) {
 				assertThat(System.getenv().get("http_proxy"))
 					.isEqualTo("http://"+server.getHostname()+":"+server.getListeningPort());
 				assertThat(System.getenv().get("no_proxy"))
@@ -466,14 +466,14 @@ class URLConnectionsTest {
 
 		@Test
 		public void connectToHttpsServer() throws IOException, NoSuchAlgorithmException, KeyManagementException {
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpsServer server = new HttpServers.HttpsServer(Net.freeServerPort(), listener)) {
+			try (HttpServers.HttpsServer server = HttpServers.httpsServer(Net.freeServerPort(), listener)) {
 				HttpsURLConnection connection = (HttpsURLConnection) URLConnections.urlConnectionOf(server.urlOf("test"));
 				connection.setSSLSocketFactory(Net.acceptAllSSLContext().getSocketFactory());
 				//connection.setAuthenticator(new Authenticator() {});
@@ -490,15 +490,15 @@ class URLConnectionsTest {
 		public void connectToHttpsServerWithProxy() throws IOException, NoSuchAlgorithmException, KeyManagementException {
 			int port = Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			try (HttpServers.HttpsServer httpsServer = new HttpServers.HttpsServer(port, listener)) {
-				try (HttpServers.HttpsProxyServer proxyServer = new HttpServers.HttpsProxyServer(port + 1)) {
+			try (HttpServers.HttpsServer httpsServer = HttpServers.httpsServer(port, listener)) {
+				try (HttpsProxyServer proxyServer = new HttpsProxyServer(port + 1)) {
 					HttpsURLConnection connection = (HttpsURLConnection) URLConnections.urlConnectionOf(httpsServer.urlOf("test"),
 						Proxys.httpProxy(proxyServer.getHostname(), proxyServer.getListeningPort()));
 					connection.setSSLSocketFactory(Net.acceptAllSSLContext().getSocketFactory());
@@ -530,14 +530,14 @@ class URLConnectionsTest {
 			String password = "passwd";
 			String authHeader = new String(Base64.getEncoder().encode((username + ":" + password).getBytes()));
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 
-			HttpServers.HttpsProxyServer.HttpsProxySessionListener proxyListener= session -> {
+			HttpsProxyServer.HttpsProxySessionListener proxyListener= session -> {
 				if (!session.headers().containsKey("Proxy-Authorization")) {
 					session.response(407, "Proxy Authorization Required",
 								Pair.of("Proxy-Authenticate", "Basic realm\"Protected\"")
@@ -545,8 +545,8 @@ class URLConnectionsTest {
 				}
 			};
 
-			try (HttpServers.HttpsServer httpsServer = new HttpServers.HttpsServer(port, listener)) {
-				try (HttpServers.HttpsProxyServer proxyServer = new HttpServers.HttpsProxyServer(port + 1, proxyListener)) {
+			try (HttpServers.HttpsServer httpsServer = HttpServers.httpsServer(port, listener)) {
+				try (HttpsProxyServer proxyServer = new HttpsProxyServer(port + 1, proxyListener)) {
 					assertThatThrownBy(() -> URLConnections.urlConnectionOf(httpsServer.urlOf("test"),
 						Proxys.httpProxy(proxyServer.getHostname(), proxyServer.getListeningPort(), username, password)))
 						.isInstanceOf(IllegalArgumentException.class)
@@ -572,19 +572,19 @@ class URLConnectionsTest {
 		public void connectToHttpsServerWithProxyBecauseSystemPropertiesAreSet() throws IOException, NoSuchAlgorithmException, KeyManagementException {
 			int port = Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 			AtomicReference<String> lastConnection=new AtomicReference<>(null);
-			HttpServers.HttpsProxyServer.HttpsProxySessionListener proxyListener = session -> {
+			HttpsProxyServer.HttpsProxySessionListener proxyListener = session -> {
 				lastConnection.set(session.host()+":"+session.port());
 			};
 
-			try (HttpServers.HttpsServer httpsServer = new HttpServers.HttpsServer(port, listener)) {
-				try (HttpServers.HttpsProxyServer proxyServer = new HttpServers.HttpsProxyServer(port + 1, proxyListener)) {
+			try (HttpServers.HttpsServer httpsServer = HttpServers.httpsServer(port, listener)) {
+				try (HttpsProxyServer proxyServer = new HttpsProxyServer(port + 1, proxyListener)) {
 					System.setProperty("https.proxyHost", proxyServer.getHostname());
 					System.setProperty("https.proxyPort", "" + proxyServer.getListeningPort());
 					System.setProperty("http.nonProxyHosts", "");
@@ -612,19 +612,19 @@ class URLConnectionsTest {
 		public void connectToHttpServerWithProxyFromEnv() throws IOException, NoSuchAlgorithmException, KeyManagementException {
 			int port = 12345; // Net.freeServerPort();
 
-			HttpServers.Listener listener = session -> {
+			HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 				if (session.getUri().equals("/test")) {
 					return Optional.of(HttpServers.response(200, "text/text", "dummy".getBytes(StandardCharsets.UTF_8)));
 				}
 				return Optional.empty();
 			};
 			AtomicReference<String> lastConnection=new AtomicReference<>(null);
-			HttpServers.HttpsProxyServer.HttpsProxySessionListener proxyListener = session -> {
+			HttpsProxyServer.HttpsProxySessionListener proxyListener = session -> {
 				lastConnection.set(session.host()+":"+session.port());
 			};
 
-			try (HttpServers.HttpsServer httpsServer = new HttpServers.HttpsServer(port, listener)) {
-				try (HttpServers.HttpsProxyServer proxyServer = new HttpServers.HttpsProxyServer(port + 1, proxyListener)) {
+			try (HttpServers.HttpsServer httpsServer = HttpServers.httpsServer(port, listener)) {
+				try (HttpsProxyServer proxyServer = new HttpsProxyServer(port + 1, proxyListener)) {
 					assertThat(System.getenv().get("https_proxy"))
 						.isEqualTo("http://"+proxyServer.getHostname()+":"+proxyServer.getListeningPort());
 					assertThat(System.getenv().get("no_proxy"))

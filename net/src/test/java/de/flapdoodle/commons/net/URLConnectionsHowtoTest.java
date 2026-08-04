@@ -19,6 +19,7 @@ package de.flapdoodle.commons.net;
 import de.flapdoodle.commons.testdoc.Recorder;
 import de.flapdoodle.commons.testdoc.Recording;
 import de.flapdoodle.commons.testdoc.TabSize;
+import fi.iki.elonen.NanoHTTPD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -47,14 +48,14 @@ public class URLConnectionsHowtoTest {
 	public void connectionAndDownloadToByteArray() throws IOException {
 		String content="content";
 
-		HttpServers.Listener listener = session -> {
+		HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 			if (session.getUri().equals("/test")) {
 				return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 			}
 			return Optional.empty();
 		};
 
-		try (HttpServers.HttpServer server = new HttpServers.HttpServer(Net.freeServerPort(), listener)) {
+		try (HttpServers.HttpServer server = HttpServers.httpServer(Net.freeServerPort(), listener)) {
 			URL downloadUrl = server.urlOf("test");
 			recording.begin();
 			URLConnection connection = URLConnections.urlConnectionOf(downloadUrl);
@@ -73,14 +74,14 @@ public class URLConnectionsHowtoTest {
 	public void connectionAndDownloadToFile(@TempDir Path tempDir) throws IOException {
 		String content="content";
 
-		HttpServers.Listener listener = session -> {
+		HttpServerFactory.Listener<NanoHTTPD.IHTTPSession, NanoHTTPD.Response> listener = session -> {
 			if (session.getUri().equals("/test")) {
 				return Optional.of(HttpServers.response(200, "text/text", content.getBytes(StandardCharsets.UTF_8)));
 			}
 			return Optional.empty();
 		};
 
-		try (HttpServers.HttpServer server = new HttpServers.HttpServer(Net.freeServerPort(), listener)) {
+		try (HttpServers.HttpServer server = HttpServers.httpServer(Net.freeServerPort(), listener)) {
 			URL downloadUrl = server.urlOf("test");
 			Path file = tempDir.resolve(UUID.randomUUID().toString());
 			recording.begin();
