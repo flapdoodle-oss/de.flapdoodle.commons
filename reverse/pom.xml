@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.flapdoodle.commons</groupId>
         <artifactId>de.flapdoodle.commons</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <name>Flapdoodle Commons Reverse</name>
