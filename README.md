@@ -24,7 +24,7 @@ following modules might be useful:
 - [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving
 - hash
 - [net](net/docs/HowTo.md) - network utilities
-- reflection
+- [reflection](reflection/docs/Reflection.md) - safe type casts
 - [reverse](reverse/docs/Summary.md) - nested try finally replacement
 - streams
 - [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
