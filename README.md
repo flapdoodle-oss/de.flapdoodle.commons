@@ -8,12 +8,12 @@ flapdoodle commons - a package of java utility artifacts
 
 ### Maven
 
-Stable (Maven Central Repository, Released: 03.08.2026 - wait 24hrs for [maven central](http://repo1.maven.org/maven2/de/flapdoodle/commons/de.flapdoodle.commons/maven-metadata.xml))
+Stable (Maven Central Repository, Released: 04.08.2026 - wait 24hrs for [maven central](http://repo1.maven.org/maven2/de/flapdoodle/commons/de.flapdoodle.commons/maven-metadata.xml))
 
 	<dependency>
 		<groupId>de.flapdoodle.commons</groupId>
 		<artifactId>de.flapdoodle.commons.[modulename]></artifactId>
-		<version>1.1.0</version>
+		<version>1.1.2</version>
 	</dependency>
 
 following modules might be useful:
