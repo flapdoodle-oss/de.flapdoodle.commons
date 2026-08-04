@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 public class Recording implements AfterAllCallback {
 
-	private static final String DEST_DIR_PROPERTY = "de.flapdoodle.testdoc.destination";
+	private static final String DEST_DIR_PROPERTY = "de.flapdoodle.commons.testdoc.destination";
 	private static final ThreadLocal<RenderOutputDelegate> templateConsumer = new ThreadLocal<>();
 
 	private final TemplateReference templateReference;

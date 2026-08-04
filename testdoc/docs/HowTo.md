@@ -116,7 +116,7 @@ ${theMethodNameIsTheKey.BarClass}
 	<version>2.19.1</version>
 	<configuration>
 		<systemPropertyVariables>
-			<de.flapdoodle.testdoc.destination>${project.build.directory}</de.flapdoodle.testdoc.destination>
+			<de.flapdoodle.commons.testdoc.destination>${project.build.directory}</de.flapdoodle.commons.testdoc.destination>
 	  </systemPropertyVariables>
 	</configuration>
 </plugin>
