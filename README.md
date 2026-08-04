@@ -28,5 +28,5 @@ following modules might be useful:
 - [reverse](reverse/docs/Summary.md) - nested try finally replacement
 - streams
 - [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
-- types
+- [types](types/docs/Types.md) - useful types
  
