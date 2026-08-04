@@ -16,12 +16,15 @@
  */
 package de.flapdoodle.commons.reflection;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ListTypeInfoTest {
 
@@ -34,6 +37,37 @@ class ListTypeInfoTest {
 
 		assertThat(listOfStrings.isInstance(Arrays.asList("foo", 2)))
 			.isFalse();
+	}
+
+	@Test
+	void superAndExtends() {
+		List<Double> testee=new ArrayList<>();
+
+		List<? extends Number> producer=testee;
+		List<? super Double> consumer=testee;
+
+		consumer.add(12.3);
+		Number element = producer.get(0);
+
+		assertThat(element.getClass()).isEqualTo(Double.class);
+		assertThat(element).isEqualTo(12.3);
+
+		TypeInfo<List<Number>> typeInfo = TypeInfo.listOf(TypeInfo.of(Number.class));
+		assertThat(typeInfo.isInstance(producer)).isTrue();
+		assertThat(typeInfo.isInstance(consumer)).isTrue();
+
+		List<Number> castedList = typeInfo.cast(consumer);
+		Number castedElement = castedList.get(0);
+		assertThat(castedElement.getClass()).isEqualTo(Double.class);
+		assertThat(castedElement).isEqualTo(12.3);
+
+		// as we don't know which other contracts the original instance hat
+		// things can go wrong, if we mutate it.
+		castedList.add(12);
+
+		assertThatThrownBy(() -> testee.get(1))
+				.isInstanceOf(ClassCastException.class)
+				.hasMessageContaining("java.lang.Integer cannot be cast to java.lang.Double");
 	}
 
 }

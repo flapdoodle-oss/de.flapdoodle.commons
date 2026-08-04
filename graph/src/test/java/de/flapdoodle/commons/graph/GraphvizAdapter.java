@@ -18,6 +18,8 @@ package de.flapdoodle.commons.graph;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.GraphvizJdkEngine;
+import guru.nidi.graphviz.engine.GraphvizV8Engine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +28,8 @@ public abstract class GraphvizAdapter {
 
 	public static byte[] asSvg(String dot) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			Graphviz.useEngine(new GraphvizV8Engine(), new GraphvizJdkEngine());
+
 			Graphviz.fromString(dot)
 				.render(Format.SVG_STANDALONE)
 				.toOutputStream(os);

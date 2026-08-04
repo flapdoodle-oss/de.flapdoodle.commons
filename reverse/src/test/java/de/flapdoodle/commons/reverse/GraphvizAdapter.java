@@ -17,8 +17,7 @@
 package de.flapdoodle.commons.reverse;
 
 import de.flapdoodle.commons.types.Try;
-import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.*;
 
 import java.io.ByteArrayOutputStream;
 
@@ -27,7 +26,10 @@ public abstract class GraphvizAdapter {
 	public static byte[] asSvg(String dot) {
 		return Try.get(() -> {
 			try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-				Graphviz.fromString(dot)
+				Graphviz.useEngine(new GraphvizV8Engine(), new GraphvizJdkEngine());
+
+				Graphviz
+					.fromString(dot)
 					.render(Format.SVG_STANDALONE)
 					.toOutputStream(os);
 				return os.toByteArray();
