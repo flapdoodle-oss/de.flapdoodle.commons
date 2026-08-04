@@ -277,6 +277,10 @@
                     </toolchains>
                 </configuration>
             </plugin>
+            <!-- see
+            https://maven.apache.org/maven-release/maven-release-plugin/migrate.html
+            https://maven.apache.org/maven-release/maven-release-plugin/usage/perform-release.html
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
