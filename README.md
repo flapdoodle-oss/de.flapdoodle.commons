@@ -19,8 +19,14 @@ Stable (Maven Central Repository, Released: 03.08.2026 - wait 24hrs for [maven c
 following modules might be useful:
 
 - checks - guava Precondition dependency free replacement
-- [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
-- [net](net/docs/HowTo.md) - network utilities
+- collections
+- compare
 - [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving
-- [reverse](reverse/docs/Summary.md) - nested try finally replacement 
+- hash
+- [net](net/docs/HowTo.md) - network utilities
+- reflection
+- [reverse](reverse/docs/Summary.md) - nested try finally replacement
+- streams
+- [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
+- types
  
