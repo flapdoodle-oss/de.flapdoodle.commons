@@ -5,7 +5,6 @@
         <groupId>de.flapdoodle.commons</groupId>
         <artifactId>de.flapdoodle.commons</artifactId>
         <version>1.1.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Flapdoodle Commons Collections</name>
@@ -15,7 +14,6 @@
         <dependency>
             <groupId>de.flapdoodle.commons</groupId>
             <artifactId>de.flapdoodle.commons.types</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
