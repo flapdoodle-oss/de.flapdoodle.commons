@@ -25,7 +25,7 @@ following modules might be useful:
 - hash
 - [net](net/docs/HowTo.md) - network utilities
 - [reflection](reflection/docs/Reflection.md) - safe type casts
-- [reverse](reverse/docs/Summary.md) - nested try finally replacement
+- [reverse](reverse/docs/HowTo.md) - nested try finally replacement
 - streams
 - [testdoc](testdoc/docs/HowTo.md) - simple doc generator based on unit tests
 - [types](types/docs/Types.md) - useful types
