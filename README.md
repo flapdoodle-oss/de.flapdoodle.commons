@@ -21,6 +21,7 @@ following modules might be useful:
 - checks - guava Precondition dependency free replacement
 - collections
 - compare
+- [eval](eval/docs/HowTo.md) - expression evaluator for java
 - [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving
 - hash
 - [net](net/docs/HowTo.md) - network utilities

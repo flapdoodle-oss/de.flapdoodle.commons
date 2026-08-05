@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.flapdoodle.commons</groupId>
+        <artifactId>de.flapdoodle.commons</artifactId>
+        <version>1.3.1-SNAPSHOT</version>
+    </parent>
+
+    <name>Flapdoodle Commons Eval</name>
+    <artifactId>de.flapdoodle.commons.eval</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.checks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.reflection</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.types</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.testdoc</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+</project>

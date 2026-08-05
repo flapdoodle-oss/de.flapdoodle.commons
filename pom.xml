@@ -547,5 +547,6 @@
         <module>compare</module>
         <module>graph</module>
         <module>reverse</module>
+        <module>eval</module>
     </modules>
 </project>

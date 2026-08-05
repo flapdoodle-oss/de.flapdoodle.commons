@@ -27,6 +27,11 @@ public interface TypeInfo<T> {
 	T cast(Object instance);
 
 	@Value.Auxiliary
+	default T castIfNotNull(Object instance) {
+		return instance != null ? cast(instance) : null;
+	}
+
+	@Value.Auxiliary
 	boolean isInstance(Object instance);
 
 	@Value.Auxiliary
