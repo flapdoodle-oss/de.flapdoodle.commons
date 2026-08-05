@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.flapdoodle.commons</groupId>
         <artifactId>de.flapdoodle.commons</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.1</version>
     </parent>
 
     <name>Flapdoodle Commons Testdoc</name>
