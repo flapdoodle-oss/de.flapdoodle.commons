@@ -16,18 +16,19 @@
  */
 package de.flapdoodle.commons.types;
 
-import org.assertj.core.api.Assertions;
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PairTest {
 
 	@Test
 	public void nullIsNotAllowed() {
-		Assertions.assertThatThrownBy(() -> Pair.of(null,"")).isInstanceOf(NullPointerException.class);
-		Assertions.assertThatThrownBy(() -> Pair.of(null,null)).isInstanceOf(NullPointerException.class);
-		Assertions.assertThatThrownBy(() -> Pair.of("",null)).isInstanceOf(NullPointerException.class);
+		assertThatThrownBy(() -> Pair.of(null,"")).isInstanceOf(NullPointerException.class);
+		assertThatThrownBy(() -> Pair.of(null,null)).isInstanceOf(NullPointerException.class);
+		assertThatThrownBy(() -> Pair.of("",null)).isInstanceOf(NullPointerException.class);
 	}
 
 	@Test

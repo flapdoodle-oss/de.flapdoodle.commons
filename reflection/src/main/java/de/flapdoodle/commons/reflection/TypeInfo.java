@@ -50,4 +50,8 @@ public interface TypeInfo<T> {
 	static <K, V> TypeInfo<Map<K, V>> mapOf(TypeInfo<K> key, TypeInfo<V> value) {
 		return MapTypeInfo.of(key, value);
 	}
+
+	static <T> TypeInfo<Optional<T>> optionalOf(TypeInfo<T> type) {
+		return OptionalTypeInfo.of(type);
+	}
 }

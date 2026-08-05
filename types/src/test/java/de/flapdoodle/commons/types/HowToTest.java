@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.commons.types;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
 import de.flapdoodle.commons.testdoc.Recorder;
 import de.flapdoodle.commons.testdoc.Recording;
 import de.flapdoodle.commons.testdoc.TabSize;
@@ -50,6 +51,21 @@ public class HowToTest {
 	}
 
 	@Test
+	void eitherTypeInfo() {
+		recording.begin();
+		Object result = Either.<String, Integer>left("left")
+			.mapLeft(it -> "<" + it + ">")
+			.mapRight(it -> it + 2);
+
+		TypeInfo<Either<String, Integer>> typeInfo = Either.typeInfo(String.class, Integer.class);
+
+		assertThat(typeInfo.isInstance(result)).isTrue();
+		Either<String, Integer> casted = typeInfo.cast(result);
+		assertThat(casted).isEqualTo(Either.left("<left>"));
+		recording.end();
+	}
+
+	@Test
 	void pairUsage() {
 		recording.begin();
 		Pair<String, String> result = Pair.of("A", 2)
@@ -58,6 +74,20 @@ public class HowToTest {
 			.map(l -> "first: " + l, r -> "second: " + r);
 
 		assertThat(result).isEqualTo(Pair.of("first: <A>","second: 4"));
+		recording.end();
+	}
+
+	@Test
+	void pairTypeInfo() {
+		recording.begin();
+		Object result = Pair.of("A", 2)
+			.mapFirst(it -> "<" + it + ">")
+			.mapSecond(it -> it + 2);
+
+		TypeInfo<Pair<String, Integer>> typeInfo = Pair.typeInfo(String.class, Integer.class);
+		assertThat(typeInfo.isInstance(result)).isTrue();
+		Pair<String, Integer> casted = typeInfo.cast(result);
+		assertThat(casted).isEqualTo(Pair.of("<A>", 4));
 		recording.end();
 	}
 
@@ -91,6 +121,20 @@ public class HowToTest {
 
 		assertThat(maybe.hasSome()).isTrue();
 		assertThat(maybe.get()).isNull();
+		recording.end();
+	}
+
+	@Test
+	void maybeTypeInfo() {
+		recording.begin();
+		Object result = Maybe.some("value")
+			.map(it -> "<" + it + ">");
+
+		TypeInfo<Maybe<String>> typeInfo = Maybe.typeInfo(String.class);
+
+		assertThat(typeInfo.isInstance(result)).isTrue();
+		Maybe<String> casted = typeInfo.cast(result);
+		assertThat(casted).isEqualTo(Maybe.some("<value>"));
 		recording.end();
 	}
 }

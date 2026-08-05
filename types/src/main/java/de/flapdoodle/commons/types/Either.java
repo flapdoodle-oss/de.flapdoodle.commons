@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.commons.types;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 import org.immutables.value.Value.Auxiliary;
 
@@ -94,4 +95,13 @@ public abstract class Either<L, R> {
 	public static <L, R> Either<L, R> right(R right) {
 		return ImmutableRight.<L, R>of(right);
 	}
+
+	public static <L, R> TypeInfo<Either<L, R>> typeInfo(TypeInfo<L> first, TypeInfo<R> second) {
+		return EitherTypeInfo.of(first, second);
+	}
+
+	public static <L, R> TypeInfo<Either<L, R>> typeInfo(Class<L> first, Class<R> second) {
+		return EitherTypeInfo.of(first, second);
+	}
+
 }

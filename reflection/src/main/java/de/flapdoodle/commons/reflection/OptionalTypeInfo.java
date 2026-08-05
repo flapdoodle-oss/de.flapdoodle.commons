@@ -19,27 +19,33 @@ package de.flapdoodle.commons.reflection;
 import de.flapdoodle.commons.checks.Preconditions;
 import org.immutables.value.Value;
 
-@Value.Immutable
-public abstract class ClassTypeInfo<T> implements TypeInfo<T> {
-	@Value.Parameter
-	public abstract Class<T> type();
+import java.util.Optional;
 
-	@Override
-	public T cast(Object instance) {
-		Preconditions.checkArgument(isInstance(instance), "type mismatch: %s is not a %s", instance, this);
-		return type().cast(instance);
-	}
+@Value.Immutable
+public abstract class OptionalTypeInfo<T> implements TypeInfo<Optional<T>> {
+
+	@Value.Parameter
+	public abstract TypeInfo<T> value();
 
 	@Override
 	public boolean isInstance(Object instance) {
-		return type().isInstance(instance);
+		return instance instanceof Optional && ((Optional<?>) instance)
+			.map(it -> value().isInstance(it))
+			.orElse(true);
 	}
 
 	@Override
 	public boolean isAssignable(TypeInfo<?> other) {
-		return other instanceof ClassTypeInfo && type().isAssignableFrom(((ClassTypeInfo<?>) other).type());
+		return other instanceof OptionalTypeInfo && value().isAssignable(((OptionalTypeInfo<?>) other).value());
 	}
-	static <T> ClassTypeInfo<T> of(Class<T> type) {
-		return ImmutableClassTypeInfo.of(type);
+
+	@Override
+	public Optional<T> cast(Object instance) {
+		Preconditions.checkArgument(isInstance(instance), "type mismatch: %s is not a %s", instance, this);
+		return (Optional<T>) instance;
+	}
+
+	public static <T> TypeInfo<Optional<T>> of(TypeInfo<T> valueType) {
+		return ImmutableOptionalTypeInfo.of(valueType);
 	}
 }

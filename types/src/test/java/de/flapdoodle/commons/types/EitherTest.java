@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.commons.types;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -89,4 +90,5 @@ class EitherTest {
 
 		assertThat(result).isEqualTo("2");
 	}
+
 }

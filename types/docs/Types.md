@@ -13,6 +13,20 @@ String result = either
 assertThat(result).isEqualTo("left: <left>");
 ```
 
+.. and some reflection helper
+
+```java
+Object result = Either.<String, Integer>left("left")
+  .mapLeft(it -> "<" + it + ">")
+  .mapRight(it -> it + 2);
+
+TypeInfo<Either<String, Integer>> typeInfo = Either.typeInfo(String.class, Integer.class);
+
+assertThat(typeInfo.isInstance(result)).isTrue();
+Either<String, Integer> casted = typeInfo.cast(result);
+assertThat(casted).isEqualTo(Either.left("<left>"));
+```
+
 ## Pair
 
 ```java
@@ -24,6 +38,19 @@ Pair<String, String> result = Pair.of("A", 2)
 assertThat(result).isEqualTo(Pair.of("first: <A>","second: 4"));
 ```
 
+.. and some reflection helper
+
+```java
+Object result = Pair.of("A", 2)
+  .mapFirst(it -> "<" + it + ">")
+  .mapSecond(it -> it + 2);
+
+TypeInfo<Pair<String, Integer>> typeInfo = Pair.typeInfo(String.class, Integer.class);
+assertThat(typeInfo.isInstance(result)).isTrue();
+Pair<String, Integer> casted = typeInfo.cast(result);
+assertThat(casted).isEqualTo(Pair.of("<A>", 4));
+```
+
 ## Maybe
 
 ```java
@@ -33,6 +60,19 @@ Maybe<String> maybe = Maybe.some("value")
 
 assertThat(maybe.hasSome()).isTrue();
 assertThat(maybe.get()).isNull();
+```
+
+.. and some reflection helper
+
+```java
+Object result = Maybe.some("value")
+  .map(it -> "<" + it + ">");
+
+TypeInfo<Maybe<String>> typeInfo = Maybe.typeInfo(String.class);
+
+assertThat(typeInfo.isInstance(result)).isTrue();
+Maybe<String> casted = typeInfo.cast(result);
+assertThat(casted).isEqualTo(Maybe.some("<value>"));
 ```
 
 ## Try

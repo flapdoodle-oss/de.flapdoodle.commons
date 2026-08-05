@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.commons.types;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.Function;
@@ -80,4 +81,13 @@ public abstract class Maybe<T> {
 	public static <T> Some<T> some(@Nullable T value) {
 		return ImmutableSome.of(value);
 	}
+
+	public static <T> TypeInfo<Maybe<T>> typeInfo(TypeInfo<T> type) {
+		return MaybeTypeInfo.of(type);
+	}
+
+	public static <T> TypeInfo<Maybe<T>> typeInfo(Class<T> type) {
+		return MaybeTypeInfo.of(type);
+	}
+
 }

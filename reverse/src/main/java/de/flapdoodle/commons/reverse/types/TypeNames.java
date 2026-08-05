@@ -19,7 +19,7 @@ package de.flapdoodle.commons.reverse.types;
 import de.flapdoodle.commons.reflection.ClassTypeInfo;
 import de.flapdoodle.commons.reflection.ListTypeInfo;
 import de.flapdoodle.commons.reflection.TypeInfo;
-import de.flapdoodle.commons.types.Pair;
+import de.flapdoodle.commons.types.PairTypeInfo;
 
 public class TypeNames {
 
@@ -35,8 +35,8 @@ public class TypeNames {
 		if (type instanceof ListTypeInfo) {
 			return "List<"+typeName(((ListTypeInfo<?>) type).elements())+">";
 		}
-		if (type instanceof Pair.PairTypeInfo) {
-			Pair.PairTypeInfo<?, ?> pair = (Pair.PairTypeInfo<?, ?>) type;
+		if (type instanceof PairTypeInfo) {
+			PairTypeInfo<?, ?> pair = (PairTypeInfo<?, ?>) type;
 			return "Pair<"+typeName(pair.first())+","+typeName(pair.second())+">";
 		}
 		if (type instanceof HasTypeName) {
