@@ -1,4 +1,4 @@
-#Why use Graphs?
+# Why use Graphs?
 
 In this simple example we can declare a graph with some custom vertex classes:
 
