@@ -8,6 +8,8 @@ flapdoodle commons - a package of java utility artifacts
 
 ### Maven
 
+![Maven Central](https://img.shields.io/maven-central/v/de.flapdoodle.commons/de.flapdoodle.commons.svg)
+
 Stable (Maven Central Repository, Released: 05.08.2026 - wait 24hrs for [maven central](http://repo1.maven.org/maven2/de/flapdoodle/commons/de.flapdoodle.commons/maven-metadata.xml))
 
 	<dependency>
