@@ -169,7 +169,8 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>5.1.1</version>
+                <!-- last working java8 version -->
+                <version>4.6</version>
                 <configuration>
                     <!-- <basedir>${basedir}</basedir> -->
                     <header>${maven.multiModuleProjectDirectory}/etc/header.txt</header>
