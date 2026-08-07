@@ -2,6 +2,10 @@
 
 We are a github organisation. You are invited to participate.
 
+## Upcoming changes
+
+We are moving to [Codeberg](https://codeberg.org/flapdoodle-oss/de.flapdoodle.commons).
+
 ## de.flapdoodle.commos
 
 flapdoodle commons - a package of java utility artifacts
