@@ -15,6 +15,11 @@
             <groupId>de.flapdoodle.commons</groupId>
             <artifactId>de.flapdoodle.commons.types</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.testdoc</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

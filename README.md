@@ -25,7 +25,7 @@ Stable (Maven Central Repository, Released: 05.08.2026 - wait 24hrs for [maven c
 following modules might be useful:
 
 - checks - guava Precondition dependency free replacement
-- collections
+- [collections](collections/docs/Collections.md) - typed map and group-by functions
 - compare
 - [eval](eval/docs/HowTo.md) - expression evaluator for java
 - [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving

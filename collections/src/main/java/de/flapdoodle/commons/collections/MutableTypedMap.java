@@ -59,7 +59,7 @@ public class MutableTypedMap<K> implements TypedMap<K> {
 		src.forEach((key, value) -> put(type, key, value));
 	}
 
-	public TypedMap<K> asImmutable() {
+	public ImmutableTypedMap<K> asImmutable() {
 		return GeneratedImmutableTypedMap.<K>builder()
 			.putAllMap(map)
 			.build();

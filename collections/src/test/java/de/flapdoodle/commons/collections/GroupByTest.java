@@ -16,11 +16,14 @@
  */
 package de.flapdoodle.commons.collections;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.Pair;
 import org.immutables.value.Value;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,12 +44,12 @@ class GroupByTest {
 
 		GroupBy<Source, Address, String> groupAddress = GroupBy.withListOf(Source.class)
 			.map(it -> address(it.addressLabel(), it.city(), it.street(), listOf()))
-			.indetifiedBy(Address::label)
+			.identifiedBy(Address::label)
 			.merge((address, hours) -> address(address.label(), address.city(), address.street(), hours), Source::reachableAt);
 
 		GroupBy<Source, Person, String> groupPerson = GroupBy.withListOf(Source.class)
 			.map(it -> person(it.name(), it.age(), listOf()))
-			.indetifiedBy(Person::name)
+			.identifiedBy(Person::name)
 			.merge((person, list) -> person(person.name(), person.age(), groupAddress.apply(list)));
 
 		List<Person> grouped = groupPerson.apply(sources);
@@ -69,6 +72,29 @@ class GroupByTest {
 						8
 					))
 				)));
+	}
+
+	@Test
+	void typeInfoForComplexTypes() {
+		GroupBy<Pair<String, Integer>, Pair<String, List<Integer>>, String> groupPairsByName = GroupBy.withListOf(Pair.typeInfo(String.class, Integer.class))
+			.map(pair -> Pair.<String, List<Integer>>of(pair.first(), new ArrayList<Integer>()))
+			.identifiedBy(Pair::first)
+			.merge((pair, list) -> pair.mapSecond(ignore -> list), Pair::second);
+
+		List<Pair<String, List<Integer>>> result = groupPairsByName.apply(Arrays.asList(
+			Pair.of("a", 1),
+			Pair.of("b", 1),
+			Pair.of("a", 2),
+			Pair.of("b", 3),
+			Pair.of("a", 3),
+			Pair.of("c", 42)
+		));
+
+		assertThat(result).containsExactly(
+			Pair.of("a", Arrays.asList(1, 2, 3)),
+			Pair.of("b", Arrays.asList(1, 3)),
+			Pair.of("c", Arrays.asList(42))
+		);
 	}
 
 	@Value.Immutable

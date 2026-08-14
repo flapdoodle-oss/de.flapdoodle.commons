@@ -17,6 +17,7 @@
 package de.flapdoodle.commons.collections;
 
 import de.flapdoodle.commons.checks.Preconditions;
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.LinkedHashMap;
@@ -40,12 +41,16 @@ public abstract class GroupBy<S, T, K> implements Function<List<S>, List<T>> {
 	}
 
 	public static <T> WithSourceType<T> withListOf(Class<T> sourceType) {
+		return new WithSourceType<T>(TypeInfo.of(sourceType));
+	}
+
+	public static <T> WithSourceType<T> withListOf(TypeInfo<T> sourceType) {
 		return new WithSourceType<T>(sourceType);
 	}
 
 	public static class WithSourceType<S> {
-		private final Class<S> sourceType;
-		public WithSourceType(Class<S> sourceType) {
+		private final TypeInfo<S> sourceType;
+		public WithSourceType(TypeInfo<S> sourceType) {
 			this.sourceType = sourceType;
 		}
 
@@ -56,24 +61,24 @@ public abstract class GroupBy<S, T, K> implements Function<List<S>, List<T>> {
 
 	public static class MapSourceType<S, T> {
 
-		private final Class<S> sourceType;
+		private final TypeInfo<S> sourceType;
 		private final Function<S, T> map;
-		public MapSourceType(Class<S> sourceType, Function<S, T> map) {
+		public MapSourceType(TypeInfo<S> sourceType, Function<S, T> map) {
 			this.sourceType = sourceType;
 			this.map = map;
 		}
 
-		public <K> WithClassifier<S, T, K> indetifiedBy(Function<T, K> classifier) {
+		public <K> WithClassifier<S, T, K> identifiedBy(Function<T, K> classifier) {
 			return new WithClassifier<>(sourceType, map, classifier);
 		}
 	}
 
 	public static class WithClassifier<S, T, K> {
 
-		private final Class<S> sourceType;
+		private final TypeInfo<S> sourceType;
 		private final Function<S, T> map;
 		private final Function<T, K> classifier;
-		public WithClassifier(Class<S> sourceType, Function<S, T> map, Function<T, K> classifier) {
+		public WithClassifier(TypeInfo<S> sourceType, Function<S, T> map, Function<T, K> classifier) {
 			this.sourceType = sourceType;
 			this.map = map;
 			this.classifier = classifier;
