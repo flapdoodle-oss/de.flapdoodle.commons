@@ -14,12 +14,12 @@ flapdoodle commons - a package of java utility artifacts
 
 ![Maven Central](https://img.shields.io/maven-central/v/de.flapdoodle.commons/de.flapdoodle.commons.svg)
 
-Stable (Maven Central Repository, Released: 05.08.2026 - wait 24hrs for [maven central](http://repo1.maven.org/maven2/de/flapdoodle/commons/de.flapdoodle.commons/maven-metadata.xml))
+Stable (Maven Central Repository, Released: 15.08.2026 - wait 24hrs for [maven central](http://repo1.maven.org/maven2/de/flapdoodle/commons/de.flapdoodle.commons/maven-metadata.xml))
 
 	<dependency>
 		<groupId>de.flapdoodle.commons</groupId>
 		<artifactId>de.flapdoodle.commons.[modulename]></artifactId>
-		<version>1.4.1</version>
+		<version>1.4.2</version>
 	</dependency>
 
 following modules might be useful:
