@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.flapdoodle.commons</groupId>
+        <artifactId>de.flapdoodle.commons</artifactId>
+        <version>1.4.3-SNAPSHOT</version>
+    </parent>
+
+    <name>Flapdoodle Commons Graph Eval</name>
+    <artifactId>de.flapdoodle.commons.graph-eval</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>mutationCoverage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>${pitest.skip}</skip>
+                    <excludedTestClasses>
+                        <excludedTestClass>de.flapdoodle.formula.Nothing</excludedTestClass>
+                        <excludedTestClass>de.flapdoodle.formula.howto.**</excludedTestClass>
+                        <excludedTestClass>de.flapdoodle.formula.values.domain.HowToCalculateChangeableInstanceTest</excludedTestClass>
+                        <class>de.flapdoodle.commons.grapheval.solver.GraphRenderer</class>
+                        <class>de.flapdoodle.commons.grapheval.solver.Explanation</class>
+                        <class>de.flapdoodle.commons.grapheval.values.TypeInfoHelper</class>
+                    </excludedTestClasses>
+                    <timestampedReports>false</timestampedReports>
+                    <verbose>false</verbose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.checks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.reflection</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.types</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.graph</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>de.flapdoodle.commons</groupId>
+            <artifactId>de.flapdoodle.commons.testdoc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

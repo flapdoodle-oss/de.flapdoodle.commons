@@ -29,6 +29,7 @@ following modules might be useful:
 - compare
 - [eval](eval/docs/HowTo.md) - expression evaluator for java
 - [graph](graph/docs/WhyUseGraphs.md) - graph building and resolving
+- [graph-eval](graph-eval/docs/GraphEval.md) - dependency graph evaluation / dataflow computation
 - hash
 - [net](net/docs/HowTo.md) - network utilities
 - [reflection](reflection/docs/Reflection.md) - safe type casts

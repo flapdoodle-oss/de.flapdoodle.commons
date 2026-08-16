@@ -1,0 +1,202 @@
+/*
+ * Copyright (C) 2016
+ *   Michael Mosmann <michael@mosmann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.flapdoodle.commons.grapheval.solver;
+
+import com.google.common.collect.ImmutableList;
+import de.flapdoodle.commons.grapheval.Value;
+import de.flapdoodle.commons.grapheval.calculate.Calculate;
+import de.flapdoodle.commons.grapheval.calculate.MappedValue;
+import de.flapdoodle.commons.grapheval.calculate.StrictValueLookup;
+import de.flapdoodle.commons.grapheval.rules.Rules;
+import de.flapdoodle.commons.grapheval.validation.ErrorMessage;
+import de.flapdoodle.commons.grapheval.validation.Validate;
+import de.flapdoodle.commons.grapheval.validation.Validation;
+import de.flapdoodle.commons.grapheval.values.Named;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class SolverTest {
+	private final Named<Integer> sumProperty = Value.named("x.sum", Integer.class);
+	private final Named<Integer> aProperty = Value.named("x.a", Integer.class);
+	private final Named<Integer> bProperty = Value.named("x.b", Integer.class);
+	private final Named<Integer> cProperty = Value.named("x.c", Integer.class);
+
+	private final Named<Integer> sumValue = Value.named("sum", Integer.class);
+
+	@Test
+	void calculateSumAndSetResultInDomainObject() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> a + b),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+		);
+
+		Context context = Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 1),
+			MappedValue.of(bProperty, 2)
+		));
+
+		assertThat(context.validatedValues().keys())
+			.containsExactlyInAnyOrder(aProperty, bProperty, sumProperty, sumValue);
+		assertThat(context.getValidated(sumProperty)).isEqualTo(3);
+	}
+
+	@Test
+	void validateBaseValue() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> a + b),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+			.add(
+				Validate.value(aProperty)
+					.using(bProperty)
+					.by((value, b) -> ImmutableList.of())
+			)
+		);
+
+		Context context = Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 1),
+			MappedValue.of(bProperty, 2)
+		));
+
+		assertThat(context.validatedValues().keys())
+			.containsExactlyInAnyOrder(sumProperty, sumValue, aProperty, bProperty);
+		assertThat(context.getValidated(sumProperty)).isEqualTo(3);
+	}
+
+	@Test
+	void detectValueResolverShadowing() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> a + b),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+			.add(
+				Validate.value(aProperty)
+					.using(bProperty)
+					.by((value, b) -> ImmutableList.of())
+			)
+		);
+
+		assertThatThrownBy(() -> Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 1),
+			MappedValue.of(bProperty, 2),
+			MappedValue.of(sumValue, 1234)
+		))).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("value lookup values are shadowed by calculations: ["+sumValue);
+	}
+
+	@Test
+	void useUnvalidated() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> a + b),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+			.add(
+				Validate.value(aProperty)
+					.using(bProperty)
+					.by((value, b) -> ImmutableList.of()),
+				Validate.value(bProperty)
+					.using(Value.unvalidated(aProperty))
+					.by(((value, a) -> Validation.noErrors()))
+			)
+		);
+
+		Context context = Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 1),
+			MappedValue.of(bProperty, 2)
+		));
+
+		assertThat(context.validatedValues().keys())
+			.containsExactlyInAnyOrder(sumProperty, sumValue, aProperty, bProperty);
+		assertThat(context.getValidated(sumProperty)).isEqualTo(3);
+	}
+
+	@Test
+	void ifValidationFailResultShouldNotSetInDomainObject() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> a + b),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+			.add(Validate.value(sumValue).by((value) -> value.map(it -> (it > 10)
+					? Validation.error("to-big", it)
+					: Validation.noErrors())
+				.orElse(Validation.error("not-set"))))
+		);
+
+		Context context = Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 7),
+			MappedValue.of(bProperty, 4)
+		));
+
+		assertThat(context.validatedValues().keys())
+			.containsExactlyInAnyOrder(aProperty, bProperty, sumProperty);
+		assertThat(context.isInvalid(sumValue)).isTrue();
+		assertThat(context.validationError(sumValue).errorMessages()).isNotNull()
+			.containsExactly(ErrorMessage.of("to-big", 11));
+		assertThat(context.isInvalid(sumProperty)).isFalse();
+		assertThat(context.getValidated(sumProperty)).isNull();
+	}
+
+	@Test
+	void detectInvalidSourceValueInValidation() {
+		ValueGraph valueGraph = ValueDependencyGraphBuilder.build(Rules.empty()
+			.add(
+				Calculate.value(sumValue)
+					.using(aProperty, bProperty)
+					.by((a, b) -> (a!=null && b!=null) ? a + b : null),
+				Calculate.value(sumProperty)
+					.from(sumValue))
+			.add(Validate.value(aProperty).by((value) -> Validation.error("wrong")))
+			.add(Validate.value(sumValue)
+				.using(aProperty, cProperty)
+				.by((value, a, b) -> a.isValid()
+					? Validation.noErrors()
+					: Validation.error("source-invalid")))
+		);
+
+		Context context = Solver.solve(Context.empty(), valueGraph, StrictValueLookup.of(
+			MappedValue.of(aProperty, 7),
+			MappedValue.of(bProperty, 4),
+			MappedValue.of(cProperty, null)
+		));
+
+		assertThat(context.validatedValues().keys())
+			.containsExactlyInAnyOrder(bProperty, cProperty, sumProperty);
+		assertThat(context.isInvalid(sumValue)).isTrue();
+		assertThat(context.validationError(sumValue).errorMessages()).isNotNull()
+			.containsExactly(ErrorMessage.of("source-invalid"));
+		assertThat(context.isInvalid(sumProperty)).isFalse();
+		assertThat(context.getValidated(sumProperty)).isNull();
+	}
+}
