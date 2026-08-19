@@ -40,6 +40,22 @@ class MaybeTest {
 	}
 
 	@Test
+	void getNoneToSome() {
+		Maybe<String> testee = Maybe.none();
+		Maybe<String> mapped = testee.orElse(() -> Maybe.some("foo"));
+		assertThat(mapped.hasSome()).isTrue();
+		assertThat(mapped.get()).isEqualTo("foo");
+	}
+
+	@Test
+	void getSomeWithoutFallback() {
+		Maybe<String> testee = Maybe.some("foo");
+		Maybe<String> mapped = testee.orElse(() -> Maybe.some("bar"));
+		assertThat(mapped.hasSome()).isTrue();
+		assertThat(mapped.get()).isEqualTo("foo");
+	}
+
+	@Test
 	void some() {
 		Maybe<String> testee = Maybe.some("value");
 

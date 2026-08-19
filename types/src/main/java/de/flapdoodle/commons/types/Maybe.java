@@ -20,6 +20,7 @@ import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Maybe<T> {
 	public abstract boolean hasSome();
@@ -30,6 +31,10 @@ public abstract class Maybe<T> {
 	public T getOrThrow(IllegalArgumentException e) {
 		if (!hasSome()) throw e;
 		return get();
+	}
+
+	public Maybe<T> orElse(Supplier<Maybe<T>> ifNone) {
+		return hasSome() ? this : ifNone.get();
 	}
 
 	@Value.Immutable
