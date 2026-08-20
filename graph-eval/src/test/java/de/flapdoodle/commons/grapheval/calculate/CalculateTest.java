@@ -646,6 +646,123 @@ class CalculateTest {
 	}
 
 	/**
+	 * Merge5 Tests
+	 */
+	@Nested
+	class Merge6Tests {
+		ValueSource<Integer> a = named("a", Integer.class);
+		ValueSource<Integer> b = named("b", Integer.class);
+		ValueSource<Integer> c = named("c", Integer.class);
+		ValueSource<Integer> d = named("d", Integer.class);
+		ValueSource<Integer> e = named("e", Integer.class);
+		ValueSource<Integer> f = named("f", Integer.class);
+		ValueSink<String> destination = named("dest", String.class);
+
+		List<? extends MappedValue<?>> mappedValues = mappedValues(
+			MappedValue.of(a, 1),
+			MappedValue.of(b, 2),
+			MappedValue.of(c, 3),
+			MappedValue.of(d, 4),
+			MappedValue.of(e, 5),
+			MappedValue.of(f, 6)
+		);
+
+		@Test
+		void valueRequiring() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).requiring(a, b, c, d, e, f).by(new SumToString());
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("SumToString");
+
+			assertThat(testee.calculate(valueLookup(mappedValues))).isEqualTo("21");
+			assertNullPointerExceptionIfAnyValueIsNull(testee, "SumToString", mappedValues);
+		}
+
+		@Test
+		void valueRequiringWithLabel() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).requiring(a, b, c, d, e, f).by(new SumToString(), "label");
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("label");
+
+			assertThat(testee.calculate(valueLookup(mappedValues))).isEqualTo("21");
+			assertNullPointerExceptionIfAnyValueIsNull(testee, "label", mappedValues);
+		}
+
+		@Test
+		void valueUsing() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).using(a, b, c, d, e, f).by(new NullableSumToString());
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("NullableSumToString");
+
+			assertIntToStringCalledIfNotNull(testee);
+		}
+
+		@Test
+		void valueUsingWithLabel() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).using(a, b, c, d, e, f).by(new NullableSumToString(), "identity");
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("identity");
+
+			assertIntToStringCalledIfNotNull(testee);
+		}
+
+		@Test
+		void valueUsingIfAllSet() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).using(a, b, c, d, e, f).ifAllSetBy(new SumToString());
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("SumToString");
+
+			assertIntToStringCalledIfNotNull(testee);
+		}
+
+		@Test
+		void valueUsingIfAllSetWithLabel() {
+			Merge6<Integer, Integer, Integer, Integer, Integer, Integer, String> testee = Calculate.value(destination).using(a, b, c, d, e, f).ifAllSetBy(new SumToString(), "identity");
+
+			assertThat(testee.sources()).containsExactly(a, b, c, d, e, f);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("identity");
+
+			assertIntToStringCalledIfNotNull(testee);
+		}
+
+		void assertIntToStringCalledIfNotNull(Calculation<String> testee) {
+			assertThat(testee.calculate(valueLookup(mappedValues))).isEqualTo("21");
+			assertNullIfAnyValueIsNull(testee, mappedValues);
+		}
+
+		class SumToString implements F6<Integer, Integer, Integer, Integer, Integer, Integer, String> {
+			@Nonnull @Override public String apply(@Nonnull Integer a, @Nonnull Integer b, @Nonnull Integer c, @Nonnull Integer d, @Nonnull Integer e, @Nonnull Integer f) {
+				return "" + (a + b + c + d + e + f);
+			}
+			@Override
+			public String toString() {
+				return SumToString.class.getSimpleName();
+			}
+		}
+
+		class NullableSumToString implements FN6<Integer, Integer, Integer, Integer, Integer, Integer, String> {
+			@Nullable @Override public String apply(@Nullable Integer a, @Nullable Integer b, @Nullable Integer c, @Nullable Integer d, @Nullable Integer e, @Nullable Integer f) {
+				return (a != null && b != null && c != null && d != null && e != null && f != null) ? "" + (a + b + c + d + e + f) : null;
+			}
+
+			@Override
+			public String toString() {
+				return NullableSumToString.class.getSimpleName();
+			}
+		}
+	}
+
+	/**
 	 * Aggregate Tests
 	 */
 	@Nested

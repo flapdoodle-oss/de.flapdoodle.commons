@@ -87,6 +87,14 @@ public abstract class Calculate {
 			return new WithMerge5Nullables<>(destination, a, b, c, d, e);
 		}
 
+		public <A, B, C, D, E, F> WithMerge6<X, A, B, C, D, E, F> requiring(ValueSource<A> a, ValueSource<B> b, ValueSource<C> c, ValueSource<D> d, ValueSource<E> e, ValueSource<F> f) {
+			return new WithMerge6<>(destination, a, b, c, d, e, f);
+		}
+		public <A, B, C, D, E, F> WithMerge6Nullables<X, A, B, C, D, E, F> using(ValueSource<A> a, ValueSource<B> b, ValueSource<C> c, ValueSource<D> d,
+			ValueSource<E> e, ValueSource<F> f) {
+			return new WithMerge6Nullables<>(destination, a, b, c, d, e, f);
+		}
+
 		public <S> WithSourcesNullable<X, S> aggregating(List<? extends ValueSource<S>> sources) {
 			return new WithSourcesNullable<>(destination, sources);
 		}
@@ -340,6 +348,62 @@ public abstract class Calculate {
 
 		public Merge5<A, B, C, D, E, X> ifAllSetBy(F5<A, B, C, D, E, X> transformation, String description) {
 			return Merge5.with(a, b, c, d, e, destination, FN5.mapOnlyIfNotNull(F5.withLabel(transformation, description)));
+		}
+	}
+
+	protected static abstract class WithMerge6Abstract<X, A, B, C, D, E, F> {
+		protected final ValueSink<X> destination;
+		protected final ValueSource<A> a;
+		protected final ValueSource<B> b;
+		protected final ValueSource<C> c;
+		protected final ValueSource<D> d;
+		protected final ValueSource<E> e;
+		protected final ValueSource<F> f;
+
+		protected WithMerge6Abstract(ValueSink<X> destination, ValueSource<A> a, ValueSource<B> b, ValueSource<C> c, ValueSource<D> d, ValueSource<E> e, ValueSource<F> f) {
+			this.destination = destination;
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+			this.e = e;
+			this.f = f;
+		}
+	}
+
+	public static class WithMerge6<X, A, B, C, D, E, F> extends WithMerge6Abstract<X, A, B, C, D, E, F> {
+		public WithMerge6(ValueSink<X> destination, ValueSource<A> a, ValueSource<B> b, ValueSource<C> c, ValueSource<D> d, ValueSource<E> e, ValueSource<F> f) {
+			super(destination, a, b, c, d, e, f);
+		}
+
+		public Merge6<A, B, C, D, E, F, X> by(F6<A, B, C, D, E, F, X> transformation) {
+			return Merge6.with(a, b, c, d, e, f, destination, FN6.checkNull(transformation, a, b, c, d, e, f));
+		}
+
+		public Merge6<A, B, C, D, E, F, X> by(F6<A, B, C, D, E, F, X> transformation, String description) {
+			return Merge6.with(a, b, c, d, e, f, destination, FN6.checkNull(F6.withLabel(transformation, description), a, b, c, d, e, f));
+		}
+	}
+
+	public static class WithMerge6Nullables<X, A, B, C, D, E, F> extends WithMerge6Abstract<X, A, B, C, D, E, F> {
+		public WithMerge6Nullables(ValueSink<X> destination, ValueSource<A> a, ValueSource<B> b, ValueSource<C> c, ValueSource<D> d, ValueSource<E> e, ValueSource<F> f) {
+			super(destination, a, b, c, d, e, f);
+		}
+
+		public Merge6<A, B, C, D, E, F, X> by(FN6<A, B, C, D, E, F, X> transformation) {
+			return Merge6.with(a, b, c, d, e, f, destination, transformation);
+		}
+
+		public Merge6<A, B, C, D, E, F, X> by(FN6<A, B, C, D, E, F, X> transformation, String description) {
+			return Merge6.with(a, b, c, d, e, f, destination, FN6.withLabel(transformation, description));
+		}
+
+		public Merge6<A, B, C, D, E, F, X> ifAllSetBy(F6<A, B, C, D, E, F, X> transformation) {
+			return Merge6.with(a, b, c, d, e, f, destination, FN6.mapOnlyIfNotNull(transformation));
+		}
+
+		public Merge6<A, B, C, D, E, F, X> ifAllSetBy(F6<A, B, C, D, E, F, X> transformation, String description) {
+			return Merge6.with(a, b, c, d, e, f, destination, FN6.mapOnlyIfNotNull(F6.withLabel(transformation, description)));
 		}
 	}
 
