@@ -19,6 +19,9 @@ package de.flapdoodle.commons.grapheval.values.domain;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
+import de.flapdoodle.commons.grapheval.values.properties.IsChangeable;
+import de.flapdoodle.commons.grapheval.values.properties.IsChangeableProperty;
+import de.flapdoodle.commons.grapheval.values.properties.IsReadable;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
@@ -27,7 +30,7 @@ public abstract class CopyOnChangeValue<O, T> implements ChangeableValue<O, T>, 
 	@Parameter
 	public abstract Id<O> id();
 	@Parameter
-	protected abstract CopyOnChangeProperty<O, T> property();
+	protected abstract IsChangeableProperty<O, T> property();
 
 	@Override
 	public String asHumanReadable() {
@@ -44,7 +47,7 @@ public abstract class CopyOnChangeValue<O, T> implements ChangeableValue<O, T>, 
 		return property().change(instance, value);
 	}
 
-	public static <O, T> ImmutableCopyOnChangeValue<O, T> of(Id<O> id, CopyOnChangeProperty<O, T> property) {
+	public static <O, T> ImmutableCopyOnChangeValue<O, T> of(Id<O> id, IsChangeableProperty<O, T> property) {
 		return ImmutableCopyOnChangeValue.of(id, property);
 	}
 }

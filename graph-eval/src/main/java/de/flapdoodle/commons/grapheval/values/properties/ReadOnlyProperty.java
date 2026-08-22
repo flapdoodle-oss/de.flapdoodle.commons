@@ -26,7 +26,7 @@ import org.immutables.value.Value;
 import java.util.function.Function;
 
 @Value.Immutable
-public abstract class ReadOnlyProperty<O, T> implements IsReadable<O, T>, HasHumanReadableLabel {
+public abstract class ReadOnlyProperty<O, T> implements IsReadOnlyProperty<O, T> {
 	@Value.Parameter
 	protected abstract TypeInfo<O> type();
 
@@ -53,6 +53,7 @@ public abstract class ReadOnlyProperty<O, T> implements IsReadable<O, T>, HasHum
 		return getter().apply(instance);
 	}
 
+	@Override
 	public ReadOnlyValue<O, T> withId(Id<O> id) {
 		return ReadOnlyValue.of(id, this);
 	}

@@ -19,6 +19,7 @@ package de.flapdoodle.commons.grapheval.values.properties;
 import com.google.common.base.Preconditions;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
+import de.flapdoodle.commons.grapheval.values.domain.ChangeableValue;
 import de.flapdoodle.commons.grapheval.values.domain.CopyOnChangeValue;
 import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
@@ -27,7 +28,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Value.Immutable
-public abstract class CopyOnChangeProperty<O, T> implements IsReadable<O, T>, IsChangeable<O, T>, HasHumanReadableLabel {
+public abstract class CopyOnChangeProperty<O, T> implements IsChangeableProperty<O, T> {
 	@Value.Parameter
 	protected abstract TypeInfo<O> type();
 
@@ -63,6 +64,7 @@ public abstract class CopyOnChangeProperty<O, T> implements IsReadable<O, T>, Is
 		return copyOnWrite().apply(instance, value);
 	}
 
+	@Override
 	public CopyOnChangeValue<O, T> withId(Id<O> id) {
 		return CopyOnChangeValue.of(id, this);
 	}

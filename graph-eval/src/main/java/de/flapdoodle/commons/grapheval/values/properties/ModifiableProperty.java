@@ -19,6 +19,7 @@ package de.flapdoodle.commons.grapheval.values.properties;
 import com.google.common.base.Preconditions;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
+import de.flapdoodle.commons.grapheval.values.domain.ModifiableValue;
 import de.flapdoodle.commons.grapheval.values.domain.ModifyInstanceValue;
 import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
@@ -27,7 +28,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Value.Immutable
-public abstract class ModifiableProperty<O, T> implements IsReadable<O, T>, IsWritable<O, T>, HasHumanReadableLabel {
+public abstract class ModifiableProperty<O, T> implements IsModifiableProperty<O, T> {
 	@Value.Parameter
 	protected abstract TypeInfo<O> type();
 
@@ -62,6 +63,7 @@ public abstract class ModifiableProperty<O, T> implements IsReadable<O, T>, IsWr
 		setter().accept(instance, value);
 	}
 
+	@Override
 	public ModifyInstanceValue<O, T> withId(Id<O> id) {
 		return ModifyInstanceValue.of(id, this);
 	}

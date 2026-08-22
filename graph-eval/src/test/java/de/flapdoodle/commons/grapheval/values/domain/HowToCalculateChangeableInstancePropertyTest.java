@@ -24,8 +24,8 @@ import de.flapdoodle.commons.grapheval.explain.RuleDependencyGraph;
 import de.flapdoodle.commons.grapheval.rules.Rules;
 import de.flapdoodle.commons.grapheval.solver.*;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
-import de.flapdoodle.commons.grapheval.values.domain.changeable.Cart;
-import de.flapdoodle.commons.grapheval.values.domain.changeable.Item;
+import de.flapdoodle.commons.grapheval.values.domain.changeableinstance.Cart;
+import de.flapdoodle.commons.grapheval.values.domain.changeableinstance.Item;
 import de.flapdoodle.commons.testdoc.Includes;
 import de.flapdoodle.commons.testdoc.Recorder;
 import de.flapdoodle.commons.testdoc.Recording;
@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HowToCalculateChangeableInstanceTest extends AbstractHowToTest {
+public class HowToCalculateChangeableInstancePropertyTest extends AbstractHowToTest {
 
 	@RegisterExtension
-	public static Recording recording = Recorder.with("HowToCalculateChangeableInstanceTest.md", TabSize.spaces(2));
+	public static Recording recording = Recorder.with("HowToCalculateChangeableInstancePropertyTest.md", TabSize.spaces(2));
 
 	@Test
 	void sumOfItemsInCart() {

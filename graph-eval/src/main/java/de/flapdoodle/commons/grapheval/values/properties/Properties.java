@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.commons.grapheval.values.properties;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -24,11 +26,27 @@ public abstract class Properties {
 		// no instance
 	}
 
-	public static <O, T> ReadOnlyProperty<O, T> readOnly(Class<O> type, String name, Function<O, T> getter) {
+	public static <O, T> IsReadOnlyProperty<O, T> readOnly(Class<O> type, String name, Function<O, T> getter) {
 		return ReadOnlyProperty.of(type,name,getter);
 	}
 
-	public static <O, T> CopyOnChangeProperty<O, T> copyOnChange(Class<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
+	public static <O, T> IsReadOnlyProperty<O, T> readOnly(TypeInfo<O> type, String name, Function<O, T> getter) {
+		return ReadOnlyProperty.of(type,name,getter);
+	}
+
+	public static <O, T> IsChangeableProperty<O, T> copyOnChange(Class<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
 		return CopyOnChangeProperty.of(type,name,getter,copyOnWrite);
+	}
+
+	public static <O, T> IsChangeableProperty<O, T> copyOnChange(TypeInfo<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
+		return CopyOnChangeProperty.of(type,name,getter,copyOnWrite);
+	}
+
+	public static <O extends IsChangeableInstance<O, M>, M extends O, T> IsChangeableProperty<O, T> changeable(Class<O> type, String name, Function<O, T> getter, BiFunction<M, T, O> copyOnWrite) {
+		return ChangeableInstanceProperty.of(type,name,getter,copyOnWrite);
+	}
+
+	public static <O extends IsChangeableInstance<O, M>, M extends O, T> IsChangeableProperty<O, T> changeable(TypeInfo<O> type, String name, Function<O, T> getter, BiFunction<M, T, O> copyOnWrite) {
+		return ChangeableInstanceProperty.of(type,name,getter,copyOnWrite);
 	}
 }

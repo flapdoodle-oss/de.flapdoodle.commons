@@ -280,11 +280,11 @@ can use some useful abstractions to reduce the boilerplate code. Put the propert
 ```java
 @Value.Immutable
 public abstract class ChangeableSample implements ChangeableInstance<ChangeableSample> {
-  public static ReadOnlyProperty<ChangeableSample, String> name =
+  public static IsReadOnlyProperty<ChangeableSample, String> name =
     readOnly(ChangeableSample.class, "name", ChangeableSample::name);
-  public static ReadOnlyProperty<ChangeableSample, Double> amount =
+  public static IsReadOnlyProperty<ChangeableSample, Double> amount =
     readOnly(ChangeableSample.class, "amount", ChangeableSample::amount);
-  public static CopyOnChangeProperty<ChangeableSample, Integer> number =
+  public static IsChangeableProperty<ChangeableSample, Integer> number =
     copyOnChange(ChangeableSample.class, "number", ChangeableSample::number, ChangeableSample::withNumber);
 
   @Value.Default

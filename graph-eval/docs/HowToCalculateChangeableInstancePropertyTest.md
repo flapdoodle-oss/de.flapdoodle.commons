@@ -40,11 +40,11 @@ We need an item class, which stores properties like `quantity` and `price`.
 
 ```java
 @Value.Immutable
-public interface Item extends ChangeableInstance<Item>, HasRules {
-  IsChangeableProperty<Item, Double> sumProperty = copyOnChange(Item.class, "sum", Item::sum, (item, value) -> ImmutableItem.copyOf(item).withSum(value));
+public interface Item extends ChangeableInstance<Item>, IsChangeableInstance<Item, ImmutableItem>, HasRules {
+  IsChangeableProperty<Item, Double> sumProperty = changeable(Item.class, "sum", Item::sum, ImmutableItem::withSum);
   IsReadOnlyProperty<Item, Double> priceProperty = readOnly(Item.class, "price", Item::price);
   IsReadOnlyProperty<Item, Integer> quantityProperty = readOnly(Item.class, "quantity", Item::quantity);
-  IsChangeableProperty<Item, Boolean> isCheapestProperty = copyOnChange(Item.class, "isCheapest", Item::isCheapest, (item, value) -> ImmutableItem.copyOf(item).withIsCheapest(value));
+  IsChangeableProperty<Item, Boolean> isCheapestProperty = changeable(Item.class, "isCheapest", Item::isCheapest, ImmutableItem::withIsCheapest);
 
   @Value.Default
   @Override
@@ -61,6 +61,11 @@ public interface Item extends ChangeableInstance<Item>, HasRules {
   @Nullable Double sum();
 
   @Nullable Boolean isCheapest();
+
+  @Override
+  default Item change(Function<ImmutableItem, Item> change) {
+    return change.apply(ImmutableItem.copyOf(this));
+  }
 
   @Override
   default <T> Item change(ChangeableValue<?, T> id, T value) {
@@ -100,9 +105,8 @@ We also need a cart class, where all items are stored:
 
 ```java
 @Value.Immutable
-public interface Cart extends ChangeableInstance<Cart>, HasRules {
-  IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Cart::sum,
-    (item, value) -> ImmutableCart.copyOf(item).withSumWithoutTax(value));
+public interface Cart extends ChangeableInstance<Cart>, IsChangeableInstance<Cart, ImmutableCart>, HasRules {
+  IsChangeableProperty<Cart, Double> sumWithoutTax = changeable(Cart.class, "sumWithoutTex", Cart::sum, ImmutableCart::withSumWithoutTax);
 
   @Value.Default
   default Id<Cart> id() {
@@ -116,6 +120,11 @@ public interface Cart extends ChangeableInstance<Cart>, HasRules {
   @Nullable Double tax();
 
   @Nullable Double sum();
+
+  @Override
+  default Cart change(Function<ImmutableCart, Cart> change) {
+    return change.apply(ImmutableCart.copyOf(this));
+  }
 
   @Override
   default <T> Cart change(ChangeableValue<?, T> id, T value) {
@@ -237,7 +246,7 @@ digraph "calculation" {
 	"id10"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#1}" ];
 	"id11"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#2}" ];
 	"id12"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
-	"id13"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
+	"id13"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Cart.sumWithoutTex#rw {Cart#0}" ];
 	"id14"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
 
 	"id0" -> "id6";
@@ -298,7 +307,7 @@ digraph "rules" {
 	"id16"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
 	"id17"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
 	"id18"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
-	"id19"[ fillcolor="gray81", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
+	"id19"[ fillcolor="gray81", style="filled", shape="rectangle", label="Cart.sumWithoutTex#rw {Cart#0}" ];
 	"id20"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="sum(...)" ];
 	"id21"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min" ];
 	"id22"[ fillcolor="gray81", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
@@ -392,7 +401,7 @@ String explainSumWithoutTax = Explanation.render(explanation, value -> HasHumanR
 
 ... and can produce some readable output:
 ```
-Cart.sumWithoutTax#rw {Cart#0} = 56.45
+Cart.sumWithoutTex#rw {Cart#0} = 56.45
  calculate with sum(...)
  - Item.sum#rw {Item#0} = 21.0
  - Item.sum#rw {Item#1} = 9.95

@@ -1,0 +1,134 @@
+/*
+ * Copyright (C) 2016
+ *   Michael Mosmann <michael@mosmann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.flapdoodle.commons.grapheval.values.domain.changeableinstance;
+
+import de.flapdoodle.commons.grapheval.calculate.Calculate;
+import de.flapdoodle.commons.grapheval.rules.Rules;
+import de.flapdoodle.commons.grapheval.types.Id;
+import de.flapdoodle.commons.grapheval.values.Related;
+import de.flapdoodle.commons.grapheval.values.domain.*;
+import de.flapdoodle.commons.grapheval.values.properties.*;
+import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.Maybe;
+import org.immutables.value.Value;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static de.flapdoodle.commons.grapheval.Value.named;
+import static de.flapdoodle.commons.grapheval.values.properties.Properties.changeable;
+import static de.flapdoodle.commons.grapheval.values.properties.Properties.copyOnChange;
+
+@Value.Immutable
+public interface Cart extends ChangeableInstance<Cart>, IsChangeableInstance<Cart, ImmutableCart>, HasRules {
+	IsChangeableProperty<Cart, Double> sumWithoutTax = changeable(Cart.class, "sumWithoutTex", Cart::sum, ImmutableCart::withSumWithoutTax);
+
+	@Value.Default
+	default Id<Cart> id() {
+		return Id.idFor(TypeInfo.of(Cart.class));
+	}
+
+	List<Item> items();
+
+	@Nullable Double sumWithoutTax();
+
+	@Nullable Double tax();
+
+	@Nullable Double sum();
+
+	@Override
+	default Cart change(Function<ImmutableCart, Cart> change) {
+		return change.apply(ImmutableCart.copyOf(this));
+	}
+
+	@Override
+	default <T> Cart change(ChangeableValue<?, T> id, T value) {
+		if (id.id().equals(id())) {
+			return ((ChangeableValue<Cart, T>) id).change(this, value);
+		}
+
+		return ImmutableCart.copyOf(this)
+			.withItems(items().stream()
+				.map(item -> item.change(id, value))
+				.collect(Collectors.toList()));
+	}
+
+	@Override
+	default <T> Maybe<T> findValue(ReadableValue<?, T> id) {
+		if (id.id().equals(id())) {
+			return Maybe.some(((ReadableValue<Cart, T>) id).get(this));
+		}
+
+		for (Item item : items()) {
+			Maybe<T> result = item.findValue(id);
+			if (result.hasSome()) return result;
+		}
+
+		return Maybe.none();
+	}
+
+	@Override
+	@Value.Auxiliary
+	default Rules addRulesTo(Rules current) {
+		Related<Double, Id<Cart>> min = named("min", Double.class).relatedTo(id());
+		Related<Double, Id<Cart>> max = named("max", Double.class).relatedTo(id());
+
+		for (Item item : items()) {
+			current = item.addRulesTo(current);
+			current = current.add(
+				Calculate.value(Item.isCheapestProperty.withId(item.id()))
+					.using(min, Item.sumProperty.withId(item.id()))
+					.by((a, b) -> a != null && a.equals(b),"min==sum")
+			);
+		}
+
+		List<CopyOnChangeValue<Item, Double>> itemSumIds = items().stream()
+			.map(item -> Item.sumProperty.withId(item.id()))
+			.collect(Collectors.toList());
+
+		return current
+			.add(Calculate
+				.value(Cart.sumWithoutTax.withId(id()))
+				.aggregating(itemSumIds)
+				.by(list -> list.stream()
+					.filter(Objects::nonNull)
+					.mapToDouble(it -> it)
+					.sum(),"sum(...)"))
+			.add(Calculate
+				.value(min)
+				.aggregating(itemSumIds)
+				.by(list -> list.stream()
+					.filter(Objects::nonNull)
+					.mapToDouble(it -> it)
+					.min().orElse(0.0),"min"))
+			.add(Calculate
+				.value(max)
+				.aggregating(itemSumIds)
+				.by(list -> list.stream()
+					.filter(Objects::nonNull)
+					.mapToDouble(it -> it)
+					.max().orElse(0.0),"max"))
+			;
+	}
+
+	static ImmutableCart.Builder builder() {
+		return ImmutableCart.builder();
+	}
+}

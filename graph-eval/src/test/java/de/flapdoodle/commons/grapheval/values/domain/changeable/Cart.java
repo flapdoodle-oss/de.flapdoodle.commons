@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.commons.grapheval.values.domain;
+package de.flapdoodle.commons.grapheval.values.domain.changeable;
 
 import de.flapdoodle.commons.grapheval.calculate.Calculate;
 import de.flapdoodle.commons.grapheval.rules.Rules;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.Related;
+import de.flapdoodle.commons.grapheval.values.domain.*;
 import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
+import de.flapdoodle.commons.grapheval.values.properties.IsChangeableProperty;
 import de.flapdoodle.commons.reflection.TypeInfo;
 import de.flapdoodle.commons.types.Maybe;
 import org.immutables.value.Value;
@@ -35,7 +37,7 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.copyO
 
 @Value.Immutable
 public interface Cart extends ChangeableInstance<Cart>, HasRules {
-	CopyOnChangeProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Cart::sum,
+	IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Cart::sum,
 		(item, value) -> ImmutableCart.copyOf(item).withSumWithoutTax(value));
 
 	@Value.Default

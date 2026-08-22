@@ -20,8 +20,7 @@ import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.domain.ChangeableInstance;
 import de.flapdoodle.commons.grapheval.values.domain.ChangeableValue;
 import de.flapdoodle.commons.grapheval.values.domain.ReadableValue;
-import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
-import de.flapdoodle.commons.grapheval.values.properties.ReadOnlyProperty;
+import de.flapdoodle.commons.grapheval.values.properties.*;
 import de.flapdoodle.commons.reflection.TypeInfo;
 import de.flapdoodle.commons.types.Maybe;
 import org.immutables.value.Value;
@@ -33,11 +32,11 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.readO
 
 @Value.Immutable
 public abstract class ChangeableSample implements ChangeableInstance<ChangeableSample> {
-	public static ReadOnlyProperty<ChangeableSample, String> name =
+	public static IsReadOnlyProperty<ChangeableSample, String> name =
 		readOnly(ChangeableSample.class, "name", ChangeableSample::name);
-	public static ReadOnlyProperty<ChangeableSample, Double> amount =
+	public static IsReadOnlyProperty<ChangeableSample, Double> amount =
 		readOnly(ChangeableSample.class, "amount", ChangeableSample::amount);
-	public static CopyOnChangeProperty<ChangeableSample, Integer> number =
+	public static IsChangeableProperty<ChangeableSample, Integer> number =
 		copyOnChange(ChangeableSample.class, "number", ChangeableSample::number, ChangeableSample::withNumber);
 
 	@Value.Default
