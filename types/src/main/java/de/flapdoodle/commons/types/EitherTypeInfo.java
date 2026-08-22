@@ -30,6 +30,11 @@ public abstract class EitherTypeInfo<L, R> implements TypeInfo<Either<L, R>> {
 	public abstract TypeInfo<R> right();
 
 	@Override
+	public String simpleName() {
+		return Either.class.getSimpleName()+"<"+left().simpleName()+","+right().simpleName()+">";
+	}
+
+	@Override
 	public boolean isInstance(Object instance) {
 		return instance instanceof Either && ((Either<?, ?>) instance)
 			.map(l -> left().isInstance(l), r -> right().isInstance(r));

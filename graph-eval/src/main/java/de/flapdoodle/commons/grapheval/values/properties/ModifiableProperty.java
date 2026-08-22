@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.domain.ModifyInstanceValue;
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.BiConsumer;
@@ -28,7 +29,7 @@ import java.util.function.Function;
 @Value.Immutable
 public abstract class ModifiableProperty<O, T> implements IsReadable<O, T>, IsWritable<O, T>, HasHumanReadableLabel {
 	@Value.Parameter
-	protected abstract Class<O> type();
+	protected abstract TypeInfo<O> type();
 
 	@Value.Parameter
 	protected abstract String name();
@@ -41,12 +42,12 @@ public abstract class ModifiableProperty<O, T> implements IsReadable<O, T>, IsWr
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName()+"{"+type().getSimpleName()+"."+name()+"}";
+		return getClass().getSimpleName()+"{"+type().simpleName()+"."+name()+"}";
 	}
 
 	@Override
 	public String asHumanReadable() {
-		return type().getSimpleName()+"."+name()+"#rw";
+		return type().simpleName()+"."+name()+"#rw";
 	}
 	
 	@Override
@@ -66,6 +67,10 @@ public abstract class ModifiableProperty<O, T> implements IsReadable<O, T>, IsWr
 	}
 
 	public static <O, T> ImmutableModifiableProperty<O,T> of(Class<O> type, String name, Function<O, T> getter, BiConsumer<O, T> setter) {
+		return ImmutableModifiableProperty.of(TypeInfo.of(type), name, getter, setter);
+	}
+
+	public static <O, T> ImmutableModifiableProperty<O,T> of(TypeInfo<O> type, String name, Function<O, T> getter, BiConsumer<O, T> setter) {
 		return ImmutableModifiableProperty.of(type, name, getter, setter);
 	}
 }

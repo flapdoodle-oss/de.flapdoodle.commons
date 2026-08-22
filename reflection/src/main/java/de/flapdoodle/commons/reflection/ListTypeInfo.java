@@ -27,6 +27,11 @@ public abstract class ListTypeInfo<T> implements TypeInfo<List<T>> {
 	public abstract TypeInfo<T> elements();
 
 	@Override
+	public String simpleName() {
+		return List.class.getSimpleName()+"<"+elements().simpleName()+">";
+	}
+
+	@Override
 	public List<T> cast(Object instance) {
 		Preconditions.checkArgument(isInstance(instance), "type mismatch: %s is not a %s", instance, this);
 		return (List<T>) instance;

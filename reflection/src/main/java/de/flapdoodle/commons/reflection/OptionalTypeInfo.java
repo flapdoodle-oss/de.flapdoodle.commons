@@ -28,6 +28,11 @@ public abstract class OptionalTypeInfo<T> implements TypeInfo<Optional<T>> {
 	public abstract TypeInfo<T> value();
 
 	@Override
+	public String simpleName() {
+		return Optional.class.getSimpleName()+"<"+value().simpleName()+">";
+	}
+
+	@Override
 	public boolean isInstance(Object instance) {
 		return instance instanceof Optional && ((Optional<?>) instance)
 			.map(it -> value().isInstance(it))

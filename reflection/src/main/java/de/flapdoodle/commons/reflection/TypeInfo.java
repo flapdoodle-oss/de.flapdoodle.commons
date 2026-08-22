@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface TypeInfo<T> {
+	@Value.Lazy
+	String simpleName();
+
 	@Value.Auxiliary
 	T cast(Object instance);
 

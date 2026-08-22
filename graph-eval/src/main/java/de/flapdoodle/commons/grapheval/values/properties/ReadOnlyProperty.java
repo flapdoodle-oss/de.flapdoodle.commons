@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.domain.ReadOnlyValue;
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.Function;
@@ -27,7 +28,7 @@ import java.util.function.Function;
 @Value.Immutable
 public abstract class ReadOnlyProperty<O, T> implements IsReadable<O, T>, HasHumanReadableLabel {
 	@Value.Parameter
-	protected abstract Class<O> type();
+	protected abstract TypeInfo<O> type();
 
 	@Value.Parameter
 	protected abstract String name();
@@ -37,12 +38,12 @@ public abstract class ReadOnlyProperty<O, T> implements IsReadable<O, T>, HasHum
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName()+"{"+type().getSimpleName()+"."+name()+"}";
+		return getClass().getSimpleName()+"{"+type().simpleName()+"."+name()+"}";
 	}
 
 	@Override
 	public String asHumanReadable() {
-		return type().getSimpleName()+"."+name()+"()";
+		return type().simpleName()+"."+name()+"()";
 	}
 	
 	@Override
@@ -57,6 +58,10 @@ public abstract class ReadOnlyProperty<O, T> implements IsReadable<O, T>, HasHum
 	}
 
 	public static <O, T> ImmutableReadOnlyProperty<O,T> of(Class<O> type, String name, Function<O, T> getter) {
+		return ImmutableReadOnlyProperty.of(TypeInfo.of(type), name, getter);
+	}
+
+	public static <O, T> ImmutableReadOnlyProperty<O,T> of(TypeInfo<O> type, String name, Function<O, T> getter) {
 		return ImmutableReadOnlyProperty.of(type, name, getter);
 	}
 }

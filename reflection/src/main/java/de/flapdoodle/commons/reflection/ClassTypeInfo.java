@@ -25,6 +25,12 @@ public abstract class ClassTypeInfo<T> implements TypeInfo<T> {
 	public abstract Class<T> type();
 
 	@Override
+
+	public String simpleName() {
+		return type().getSimpleName();
+	}
+
+	@Override
 	public T cast(Object instance) {
 		Preconditions.checkArgument(isInstance(instance), "type mismatch: %s is not a %s", instance, this);
 		return type().cast(instance);

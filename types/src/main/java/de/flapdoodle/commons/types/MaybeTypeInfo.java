@@ -26,6 +26,11 @@ public abstract class MaybeTypeInfo<T> implements TypeInfo<Maybe<T>> {
 	public abstract TypeInfo<T> type();
 
 	@Override
+	public String simpleName() {
+		return Maybe.class.getSimpleName()+"<"+type().simpleName()+">";
+	}
+
+	@Override
 	public boolean isInstance(Object instance) {
 		if (instance instanceof Maybe) {
 			Maybe<?> casted = (Maybe<?>) instance;

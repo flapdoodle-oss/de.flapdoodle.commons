@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.domain.CopyOnChangeValue;
+import de.flapdoodle.commons.reflection.TypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.BiFunction;
@@ -28,7 +29,7 @@ import java.util.function.Function;
 @Value.Immutable
 public abstract class CopyOnChangeProperty<O, T> implements IsReadable<O, T>, IsChangeable<O, T>, HasHumanReadableLabel {
 	@Value.Parameter
-	protected abstract Class<O> type();
+	protected abstract TypeInfo<O> type();
 
 	@Value.Parameter
 	protected abstract String name();
@@ -41,11 +42,11 @@ public abstract class CopyOnChangeProperty<O, T> implements IsReadable<O, T>, Is
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName()+"{"+type().getSimpleName()+"."+name()+"}";
+		return getClass().getSimpleName()+"{"+type().simpleName()+"."+name()+"}";
 	}
 
 	@Override public String asHumanReadable() {
-		return type().getSimpleName()+"."+name()+"#rw";
+		return type().simpleName()+"."+name()+"#rw";
 	}
 	
 	@Override
@@ -67,6 +68,10 @@ public abstract class CopyOnChangeProperty<O, T> implements IsReadable<O, T>, Is
 	}
 
 	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(Class<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
+		return ImmutableCopyOnChangeProperty.of(TypeInfo.of(type), name, getter, copyOnWrite);
+	}
+
+	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(TypeInfo<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
 		return ImmutableCopyOnChangeProperty.of(type, name, getter, copyOnWrite);
 	}
 }

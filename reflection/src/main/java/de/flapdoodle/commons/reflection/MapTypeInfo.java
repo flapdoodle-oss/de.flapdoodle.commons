@@ -30,6 +30,11 @@ public abstract class MapTypeInfo<K, V> implements TypeInfo<Map<K, V>> {
 	public abstract TypeInfo<V> value();
 
 	@Override
+	public String simpleName() {
+		return Map.class.getSimpleName()+"<"+key().simpleName()+","+value().simpleName()+">";
+	}
+
+	@Override
 	public Map<K, V> cast(Object instance) {
 		Preconditions.checkArgument(isInstance(instance), "type mismatch: %s is not a %s", instance, this);
 		return (Map<K, V>) instance;

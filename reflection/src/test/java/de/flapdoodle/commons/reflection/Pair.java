@@ -40,6 +40,11 @@ public abstract class Pair<FIRST, SECOND> {
 		public abstract TypeInfo<SECOND> second();
 
 		@Override
+		public String simpleName() {
+			return Pair.class.getSimpleName()+"<"+first().simpleName()+","+second().simpleName()+">";
+		}
+
+		@Override
 		public boolean isInstance(Object instance) {
 			return instance instanceof Pair
 				&& first().isInstance(((Pair<?, ?>) instance).first())
