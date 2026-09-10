@@ -162,7 +162,7 @@ public class HowToTest {
 		assertThat(sample.child().age()).isEqualTo(12);
 
 		Sample withNewName = name.change(sample, "new Name");
-		Sample withNewAge = child.and(age).change(withNewName, 18);
+		Sample withNewAge = child.and(age).map(withNewName, it -> it + 6);
 
 		assertThat(withNewAge.name()).isEqualTo("new Name");
 		assertThat(withNewAge.child().name()).isEqualTo("Child");

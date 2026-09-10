@@ -21,6 +21,10 @@ import java.util.function.Function;
 public interface Lens<M, T> extends View<M, T> {
 	M change(M model, T value);
 
+	default M map(M model, Function<T, T> map) {
+		return change(model, map.apply(read(model)));
+	}
+
 	default <U> Lens<M, U> and(Lens<T, U> next) {
 		Lens<M, T> that=this;
 

@@ -44,7 +44,8 @@ class LensTest {
 		assertThat(sample.child().name()).isEqualTo("Child");
 		assertThat(sample.child().age()).isEqualTo(12);
 
-		Sample changed = child.and(age).change(name.change(sample, "new Name"), 18);
+		Sample withChangeName = name.change(sample, "new Name");
+		Sample changed = child.and(age).map(withChangeName, it -> it + 6);
 
 		assertThat(changed.name()).isEqualTo("new Name");
 		assertThat(changed.child().name()).isEqualTo("Child");
