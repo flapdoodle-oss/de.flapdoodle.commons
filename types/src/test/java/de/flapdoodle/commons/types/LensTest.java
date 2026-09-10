@@ -51,4 +51,35 @@ class LensTest {
 		assertThat(changed.child().name()).isEqualTo("Child");
 		assertThat(changed.child().age()).isEqualTo(18);
 	}
+
+	@Test
+	void changesAsSequence() {
+		ImmutableSample sample = Sample.builder()
+			.name("Name")
+			.child(Sample.Child.builder()
+				.name("Child")
+				.age(12)
+				.build())
+			.build();
+
+		Lens<Sample, String> name = Lens.ofProperty(Sample::name)
+			.changeBy(ImmutableSample::copyOf, ImmutableSample::withName);
+		Lens<Sample, Sample.Child> child = Lens.ofProperty(Sample::child)
+			.changeBy(ImmutableSample::copyOf, ImmutableSample::withChild);
+
+		Lens<Sample.Child, Integer> age = Lens.ofProperty(Sample.Child::age)
+			.changeBy(ImmutableChild::copyOf, ImmutableChild::withAge);
+
+		assertThat(sample.name()).isEqualTo("Name");
+		assertThat(sample.child().name()).isEqualTo("Child");
+		assertThat(sample.child().age()).isEqualTo(12);
+
+		Sample changed = name.change("new Name")
+			.andThen(child.and(age).map(it -> it + 6))
+			.apply(sample);
+
+		assertThat(changed.name()).isEqualTo("new Name");
+		assertThat(changed.child().name()).isEqualTo("Child");
+		assertThat(changed.child().age()).isEqualTo(18);
+	}
 }

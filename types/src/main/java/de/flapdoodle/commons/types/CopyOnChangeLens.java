@@ -19,7 +19,7 @@ package de.flapdoodle.commons.types;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class CopyOnChangeLens<T, M, IM extends M> implements Lens<M, T> {
+public class CopyOnChangeLens<M, T, IM extends M> implements Lens<M, T> {
 	private final Function<M, IM> copy;
 	private final Function<M, T> read;
 	private final BiFunction<IM, T, M> change;
@@ -42,15 +42,15 @@ public class CopyOnChangeLens<T, M, IM extends M> implements Lens<M, T> {
 		return change.apply(copy.apply(model), value);
 	}
 
-	public static <T, M, IM extends M> CopyOnChangeLens<T, M, IM> of(
+	public static <T, M, IM extends M> CopyOnChangeLens<M, T, IM> of(
 		Function<M, IM> copy,
 		Function<M, T> read,
 		BiFunction<IM, T, M> change
 	) {
-		return new CopyOnChangeLens<T, M, IM>(copy, read, change);
+		return new CopyOnChangeLens<M, T, IM>(copy, read, change);
 	}
 
-	public static <T, M> CopyOnChangeLens<T, M, M> of(
+	public static <T, M> CopyOnChangeLens<M, T, M> of(
 		Function<M, T> readProperty,
 		BiFunction<M, T, M> changeProperty
 	) {
@@ -67,14 +67,14 @@ public class CopyOnChangeLens<T, M, IM extends M> implements Lens<M, T> {
 			this.read = read;
 		}
 
-		public <IM extends M> CopyOnChangeLens<T, M, IM> changeBy(
+		public <IM extends M> CopyOnChangeLens<M, T, IM> changeBy(
 			Function<M, IM> copy,
 			BiFunction<IM, T, M> change
 		) {
 			return of(copy, read, change);
 		}
 
-		public CopyOnChangeLens<T, M, M> changeBy(
+		public CopyOnChangeLens<M, T, M> changeBy(
 			BiFunction<M, T, M> change
 		) {
 			return of(read, change);

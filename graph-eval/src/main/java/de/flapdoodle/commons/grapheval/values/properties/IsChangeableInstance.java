@@ -20,6 +20,10 @@ import org.immutables.value.Value;
 
 import java.util.function.Function;
 
+/**
+ * use {@link de.flapdoodle.commons.types.Lens}
+ */
+@Deprecated
 public interface IsChangeableInstance<T, M extends T> {
     @Value.Auxiliary
     T change(Function<M,T> change);

@@ -41,3 +41,17 @@ ${maybeTypeInfo}
 ```java
 ${tryUsage}
 ```
+
+## Lens
+                  
+.. change nested immutable object properties with lenses:
+
+```java
+${lensUsage}
+```
+
+.. and chain these changes:
+
+```java
+${lensUsageChained}
+```

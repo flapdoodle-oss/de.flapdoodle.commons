@@ -40,6 +40,14 @@ public interface Lens<M, T> extends View<M, T> {
 		};
 	}
 
+	default Function<M, M> change(T value) {
+		return model -> change(model, value);
+	}
+
+	default Function<M, M> map(Function<T, T> map) {
+		return model -> map(model, map);
+	}
+
 	static <T, M> CopyOnChangeLens.WithGetter<T, M> ofProperty(Function<M, T> read) {
 		return CopyOnChangeLens.ofProperty(read);
 	}
