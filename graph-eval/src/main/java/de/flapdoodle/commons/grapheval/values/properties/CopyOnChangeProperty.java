@@ -17,11 +17,11 @@
 package de.flapdoodle.commons.grapheval.values.properties;
 
 import com.google.common.base.Preconditions;
-import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
 import de.flapdoodle.commons.grapheval.types.Id;
-import de.flapdoodle.commons.grapheval.values.domain.ChangeableValue;
 import de.flapdoodle.commons.grapheval.values.domain.CopyOnChangeValue;
 import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.CopyOnChangeLens;
+import de.flapdoodle.commons.types.Lens;
 import org.immutables.value.Value;
 
 import java.util.function.BiFunction;
@@ -36,10 +36,7 @@ public abstract class CopyOnChangeProperty<O, T> implements IsChangeableProperty
 	protected abstract String name();
 
 	@Value.Parameter
-	protected abstract Function<O, T> getter();
-
-	@Value.Parameter
-	protected abstract BiFunction<O, T, O> copyOnWrite();
+	protected abstract Lens<O, T> lens();
 
 	@Override
 	public String toString() {
@@ -54,14 +51,14 @@ public abstract class CopyOnChangeProperty<O, T> implements IsChangeableProperty
 	@Value.Auxiliary
 	public T get(O instance) {
 		Preconditions.checkArgument(type().isInstance(instance),"instance type mismatch: %s != %s", type(), instance);
-		return getter().apply(instance);
+		return lens().read(instance);
 	}
 
 	@Override
 	@Value.Auxiliary
 	public O change(O instance, T value) {
 		Preconditions.checkArgument(type().isInstance(instance),"instance type mismatch: %s != %s", type(), instance);
-		return copyOnWrite().apply(instance, value);
+		return lens().change(instance, value);
 	}
 
 	@Override
@@ -69,11 +66,21 @@ public abstract class CopyOnChangeProperty<O, T> implements IsChangeableProperty
 		return CopyOnChangeValue.of(id, this);
 	}
 
-	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(Class<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
-		return ImmutableCopyOnChangeProperty.of(TypeInfo.of(type), name, getter, copyOnWrite);
+	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(TypeInfo<O> type, String name, Lens<O, T> lens) {
+		return ImmutableCopyOnChangeProperty.of(type, name, lens);
 	}
 
 	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(TypeInfo<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
-		return ImmutableCopyOnChangeProperty.of(type, name, getter, copyOnWrite);
+		return of(type, name, CopyOnChangeLens.of(getter, copyOnWrite));
 	}
+
+	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(Class<O> type, String name, Lens<O, T> lens) {
+		return of(TypeInfo.of(type), name, lens);
+	}
+
+	public static <O, T> ImmutableCopyOnChangeProperty<O,T> of(Class<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
+		return of(type, name, CopyOnChangeLens.of(getter, copyOnWrite));
+	}
+
+
 }

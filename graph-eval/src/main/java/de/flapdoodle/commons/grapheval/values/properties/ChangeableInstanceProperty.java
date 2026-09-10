@@ -27,7 +27,11 @@ import org.immutables.value.Value;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * use {@link de.flapdoodle.commons.types.Lens}
+ */
 @Value.Immutable
+@Deprecated
 public abstract class ChangeableInstanceProperty<O extends IsChangeableInstance<O, M>, M extends O, T> implements IsChangeableProperty<O, T> {
 
     @Value.Parameter

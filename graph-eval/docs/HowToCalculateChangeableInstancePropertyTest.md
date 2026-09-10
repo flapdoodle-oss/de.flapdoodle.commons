@@ -106,7 +106,7 @@ We also need a cart class, where all items are stored:
 ```java
 @Value.Immutable
 public interface Cart extends ChangeableInstance<Cart>, IsChangeableInstance<Cart, ImmutableCart>, HasRules {
-  IsChangeableProperty<Cart, Double> sumWithoutTax = changeable(Cart.class, "sumWithoutTex", Cart::sum, ImmutableCart::withSumWithoutTax);
+  IsChangeableProperty<Cart, Double> sumWithoutTax = changeable(Cart.class, "sumWithoutTex", Cart::sumWithoutTax, ImmutableCart::withSumWithoutTax);
 
   @Value.Default
   default Id<Cart> id() {

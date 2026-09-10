@@ -24,6 +24,7 @@ import de.flapdoodle.commons.grapheval.values.domain.*;
 import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
 import de.flapdoodle.commons.grapheval.values.properties.IsChangeableProperty;
 import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.Lens;
 import de.flapdoodle.commons.types.Maybe;
 import org.immutables.value.Value;
 
@@ -37,8 +38,8 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.copyO
 
 @Value.Immutable
 public interface Cart extends ChangeableInstance<Cart>, HasRules {
-	IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Cart::sum,
-		(item, value) -> ImmutableCart.copyOf(item).withSumWithoutTax(value));
+	IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Lens.ofProperty(Cart::sumWithoutTax)
+			.changeBy(ImmutableCart::copyOf, ImmutableCart::withSumWithoutTax));
 
 	@Value.Default
 	default Id<Cart> id() {

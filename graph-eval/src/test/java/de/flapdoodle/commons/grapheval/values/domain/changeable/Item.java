@@ -25,6 +25,7 @@ import de.flapdoodle.commons.grapheval.values.properties.IsChangeableProperty;
 import de.flapdoodle.commons.grapheval.values.properties.IsReadOnlyProperty;
 import de.flapdoodle.commons.grapheval.values.properties.ReadOnlyProperty;
 import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.Lens;
 import de.flapdoodle.commons.types.Maybe;
 import org.immutables.value.Value;
 
@@ -35,10 +36,12 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.readO
 
 @Value.Immutable
 public interface Item extends ChangeableInstance<Item>, HasRules {
-	IsChangeableProperty<Item, Double> sumProperty = copyOnChange(Item.class, "sum", Item::sum, (item, value) -> ImmutableItem.copyOf(item).withSum(value));
+	IsChangeableProperty<Item, Double> sumProperty = copyOnChange(Item.class, "sum", Lens.ofProperty(Item::sum)
+		.changeBy(ImmutableItem::copyOf, ImmutableItem::withSum));
 	IsReadOnlyProperty<Item, Double> priceProperty = readOnly(Item.class, "price", Item::price);
 	IsReadOnlyProperty<Item, Integer> quantityProperty = readOnly(Item.class, "quantity", Item::quantity);
-	IsChangeableProperty<Item, Boolean> isCheapestProperty = copyOnChange(Item.class, "isCheapest", Item::isCheapest, (item, value) -> ImmutableItem.copyOf(item).withIsCheapest(value));
+	IsChangeableProperty<Item, Boolean> isCheapestProperty = copyOnChange(Item.class, "isCheapest", Lens.ofProperty(Item::isCheapest)
+		.changeBy(ImmutableItem::copyOf, ImmutableItem::withIsCheapest));
 
 	@Value.Default
 	@Override

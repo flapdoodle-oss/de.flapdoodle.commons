@@ -17,6 +17,7 @@
 package de.flapdoodle.commons.grapheval.values.properties;
 
 import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.Lens;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -38,8 +39,16 @@ public abstract class Properties {
 		return CopyOnChangeProperty.of(type,name,getter,copyOnWrite);
 	}
 
+	public static <O, T> IsChangeableProperty<O, T> copyOnChange(Class<O> type, String name, Lens<O, T> lens) {
+		return CopyOnChangeProperty.of(type,name,lens);
+	}
+
 	public static <O, T> IsChangeableProperty<O, T> copyOnChange(TypeInfo<O> type, String name, Function<O, T> getter, BiFunction<O, T, O> copyOnWrite) {
 		return CopyOnChangeProperty.of(type,name,getter,copyOnWrite);
+	}
+
+	public static <O, T> IsChangeableProperty<O, T> copyOnChange(TypeInfo<O> type, String name, Lens<O, T> lens) {
+		return CopyOnChangeProperty.of(type,name,lens);
 	}
 
 	public static <O extends IsChangeableInstance<O, M>, M extends O, T> IsChangeableProperty<O, T> changeable(Class<O> type, String name, Function<O, T> getter, BiFunction<M, T, O> copyOnWrite) {
