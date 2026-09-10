@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.flapdoodle.commons</groupId>
         <artifactId>de.flapdoodle.commons</artifactId>
-        <version>1.6.2-SNAPSHOT</version>
+        <version>1.6.2</version>
     </parent>
 
     <name>Flapdoodle Commons Streams</name>
