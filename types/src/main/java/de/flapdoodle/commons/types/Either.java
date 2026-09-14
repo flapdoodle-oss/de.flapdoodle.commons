@@ -77,10 +77,22 @@ public abstract class Either<L, R> {
 			: (Either<T, R>) this;
 	}
 
+	public <T> Either<T, R> flatMapLeft(Function<L, Either<T, R>> transformation) {
+		return isLeft()
+			? transformation.apply(left())
+			: (Either<T, R>) this;
+	}
+
 	public <T> Either<L, T> mapRight(Function<R, T> transformation) {
 		return isLeft()
 			? (Either<L, T>) this
 			: right(transformation.apply(right()));
+	}
+
+	public <T> Either<L, T> flatMapRight(Function<R, Either<L, T>> transformation) {
+		return isLeft()
+			? (Either<L, T>) this
+			: transformation.apply(right());
 	}
 
 	public <T> T map(Function<L, T> leftTransformation, Function<R, T> rightTransformation) {

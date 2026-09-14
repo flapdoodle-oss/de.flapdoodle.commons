@@ -84,6 +84,50 @@ class EitherTest {
 	}
 
 	@Test
+	void flatMapEitherLeft() {
+		Either<String, Integer> result = Either.<String, Integer>left("x")
+			.flatMapLeft(it -> Either.left("left "+it))
+			.mapRight(it -> it + 2);
+
+		assertThat(result.isLeft()).isTrue();
+		assertThat(result.left()).isEqualTo("left x");
+		assertThatThrownBy(result::right).isInstanceOf(NoSuchElementException.class);
+	}
+
+	@Test
+	void flatMapEitherLeftWithRight() {
+		Either<String, Integer> result = Either.<String, Integer>left("x")
+			.flatMapLeft(it -> Either.<String, Integer>right(200))
+			.mapRight(it -> it + 2);
+
+		assertThat(result.isLeft()).isFalse();
+		assertThat(result.right()).isEqualTo(202);
+		assertThatThrownBy(result::left).isInstanceOf(NoSuchElementException.class);
+	}
+
+	@Test
+	void flatMapEitherRight() {
+		Either<String, Integer> result = Either.<String, Integer>right(2)
+			.mapLeft(it -> "left "+it)
+			.flatMapRight(it -> Either.right(it + 2));
+
+		assertThat(result.isLeft()).isFalse();
+		assertThat(result.right()).isEqualTo(4);
+		assertThatThrownBy(result::left).isInstanceOf(NoSuchElementException.class);
+	}
+
+	@Test
+	void flatMapEitherRightWithLeft() {
+		Either<String, Integer> result = Either.<String, Integer>right(2)
+			.mapLeft(it -> "left "+it)
+			.flatMapRight(it -> Either.left("foo"));
+
+		assertThat(result.isLeft()).isTrue();
+		assertThat(result.left()).isEqualTo("foo");
+		assertThatThrownBy(result::right).isInstanceOf(NoSuchElementException.class);
+	}
+
+	@Test
 	void mapMustExtractOneValue() {
 		String result = Either.<Integer, Integer>left(2)
 			.map(String::valueOf, String::valueOf);
