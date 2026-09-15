@@ -34,7 +34,7 @@ class IterablesTest {
 			.changeBy(ImmutableChild::copyOf, ImmutableChild::withAge);
 
 		Function<? super Iterable<? extends Child>, List<Child>> changeItem = Iterables.of(Child.class)
-			.filter(age, it -> it>18)
+			.match(age, it -> it>18)
 			.map(name, n -> n+"(old)")
 			.toList();
 

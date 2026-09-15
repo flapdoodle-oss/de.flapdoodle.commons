@@ -42,42 +42,48 @@ public abstract class Iterables {
 
 	public static class WithItemType<T> {
 
-		private final TypeInfo<T> itemType;
-		public WithItemType(TypeInfo<T> itemType) {
-			this.itemType = itemType;
+		public WithItemType(TypeInfo<T> ignored) {
 		}
 
-		public WithFilter<T> filter(Predicate<T> test) {
-			return new WithFilter<>(test);
+		public WithMatch<T> match(Predicate<T> test) {
+			return new WithMatch<>(test);
 		}
 
-		public <V> WithFilter<T> filter(View<T, V> lens, Predicate<V> test) {
-			return filter(it -> test.test(lens.read(it)));
+		public <V> WithMatch<T> match(View<T, V> lens, Predicate<V> test) {
+			return match(it -> test.test(lens.read(it)));
 		}
 
 		public WithMap<T> map(Function<T, T> map) {
-			return new WithFilter<T>(it -> true).map(map);
+			return new WithMatch<T>(it -> true).map(map);
 		}
 
 		public <C> WithMap<T> map(Lens<T, C> property, Function<C, C> change) {
-			return new WithFilter<T>(it -> true).map(property, change);
+			return new WithMatch<T>(it -> true).map(property, change);
 		}
 	}
 
-	public static class WithFilter<T> {
+	public static class WithMatch<T> {
 
-		private final Predicate<T> check;
+		private final Predicate<T> match;
 
-		public WithFilter(Predicate<T> check) {
-			this.check = check;
+		public WithMatch(Predicate<T> match) {
+			this.match = match;
 		}
 
 		public WithMap<T> map(Function<? super T, T> map) {
-			return new WithMap<>(check, map);
+			return new WithMap<>(match, map);
+		}
+
+		public WithMap<T> set(T value) {
+			return map(ignore -> value);
 		}
 
 		public <C> WithMap<T> map(Lens<T, C> property, Function<? super C, C> change) {
 			return map(it -> property.map(it, change));
+		}
+
+		public <C> WithMap<T> set(Lens<T, C> property, C value) {
+			return map(property, ignore -> value);
 		}
 	}
 

@@ -37,7 +37,7 @@ class MapsTest {
 			.changeBy(ImmutableChild::copyOf, ImmutableChild::withAge);
 
 		Function<? super Map<? extends String,? extends Child>, Map<String, Child>> testee = Maps.of(String.class, Child.class)
-			.filterValue(age, it -> it >18)
+			.matchValue(age, it -> it >18)
 			.mapValue(name, it -> it+"(old)")
 			.toMap();
 
