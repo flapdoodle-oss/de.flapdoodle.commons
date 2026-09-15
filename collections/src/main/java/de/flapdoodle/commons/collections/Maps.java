@@ -48,7 +48,7 @@ public abstract class Maps {
 		}
 
 		public <T> WithMatch<K, V> matchKey(View<K, T> lens, Predicate<T> test) {
-			return matchKey(it -> test.test(lens.read(it)));
+			return matchKey(lens.test(test));
 		}
 
 		public WithMatch<K, V> matchValue(Predicate<V> filter) {
@@ -56,7 +56,7 @@ public abstract class Maps {
 		}
 
 		public <T> WithMatch<K, V> matchValue(View<V, T> lens, Predicate<T> test) {
-			return matchValue(it -> test.test(lens.read(it)));
+			return matchValue(lens.test(test));
 		}
 	}
 
@@ -74,7 +74,7 @@ public abstract class Maps {
 		}
 
 		public <C> WithMap<K, V> mapKey(Lens<K, C> lens, Function<C, C> change) {
-			return mapKey(it -> lens.map(it, change));
+			return mapKey(lens.map(change));
 		}
 
 		public WithMap<K, V> mapValue(Function<? super V, V> map) {
@@ -82,7 +82,7 @@ public abstract class Maps {
 		}
 
 		public <C> WithMap<K, V> mapValue(Lens<V, C> lens, Function<C, C> change) {
-			return mapValue(it -> lens.map(it, change));
+			return mapValue(lens.map(change));
 		}
 	}
 

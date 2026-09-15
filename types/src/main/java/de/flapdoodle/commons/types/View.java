@@ -16,9 +16,15 @@
  */
 package de.flapdoodle.commons.types;
 
+import java.util.function.Predicate;
+
 @FunctionalInterface
 public interface View<M, T> {
 	T read(M model);
+
+	default Predicate<M> test(Predicate<T> predicate) {
+		return model -> predicate.test(read(model));
+	}
 
 	default <U> View<M, U> and(View<T, U> next) {
 		return model -> next.read(this.read(model));

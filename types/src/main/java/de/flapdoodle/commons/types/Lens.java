@@ -16,8 +16,6 @@
  */
 package de.flapdoodle.commons.types;
 
-import de.flapdoodle.commons.reflection.TypeInfo;
-
 import java.util.function.Function;
 
 public interface Lens<M, T> extends View<M, T> {

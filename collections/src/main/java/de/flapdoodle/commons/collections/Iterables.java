@@ -50,7 +50,7 @@ public abstract class Iterables {
 		}
 
 		public <V> WithMatch<T> match(View<T, V> lens, Predicate<V> test) {
-			return match(it -> test.test(lens.read(it)));
+			return match(lens.test(test));
 		}
 
 		public WithMap<T> map(Function<T, T> map) {
@@ -58,7 +58,7 @@ public abstract class Iterables {
 		}
 
 		public <C> WithMap<T> map(Lens<T, C> property, Function<C, C> change) {
-			return new WithMatch<T>(it -> true).map(property, change);
+			return map(property.map(change));
 		}
 	}
 
@@ -79,7 +79,7 @@ public abstract class Iterables {
 		}
 
 		public <C> WithMap<T> map(Lens<T, C> property, Function<? super C, C> change) {
-			return map(it -> property.map(it, change));
+			return map(property.map(change));
 		}
 
 		public <C> WithMap<T> set(Lens<T, C> property, C value) {
