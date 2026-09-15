@@ -16,12 +16,14 @@
  */
 package de.flapdoodle.commons.types;
 
+import de.flapdoodle.commons.reflection.TypeInfo;
+
 import java.util.function.Function;
 
 public interface Lens<M, T> extends View<M, T> {
 	M change(M model, T value);
 
-	default M map(M model, Function<T, T> map) {
+	default M map(M model, Function<? super T, T> map) {
 		return change(model, map.apply(read(model)));
 	}
 
@@ -44,7 +46,7 @@ public interface Lens<M, T> extends View<M, T> {
 		return model -> change(model, value);
 	}
 
-	default Function<M, M> map(Function<T, T> map) {
+	default Function<M, M> map(Function<? super T, T> map) {
 		return model -> map(model, map);
 	}
 

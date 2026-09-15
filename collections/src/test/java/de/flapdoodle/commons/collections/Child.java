@@ -14,31 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.commons.types;
+package de.flapdoodle.commons.collections;
 
 import org.immutables.value.Value;
 
-import java.util.List;
-
 @Value.Immutable
-public interface Sample {
+interface Child {
 	String name();
 
-	Child child();
+	int age();
 
-	List<Child> children();
-
-	@Value.Immutable
-	interface Child {
-		String name();
-		int age();
-
-		static ImmutableChild.Builder builder() {
-			return ImmutableChild.builder();
-		}
-	}
-
-	static ImmutableSample.Builder builder() {
-		return ImmutableSample.builder();
+	static ImmutableChild.Builder builder() {
+		return ImmutableChild.builder();
 	}
 }
