@@ -22,4 +22,18 @@ import org.immutables.value.Value;
 public interface HasRules {
 	@Value.Auxiliary
 	Rules addRulesTo(Rules rules);
+
+	static HasRules merge(HasRules ... delegates) {
+		return rules -> {
+			Rules current = rules;
+			for (HasRules delegate : delegates) {
+				current = delegate.addRulesTo(current);
+			}
+			return current;
+		};
+	}
+
+	static Rules addAll(Rules rules, HasRules ... delegates) {
+		return merge(delegates).addRulesTo(rules);
+	}
 }
