@@ -20,8 +20,13 @@ import de.flapdoodle.commons.grapheval.ValueSink;
 import de.flapdoodle.commons.grapheval.ValueSource;
 import de.flapdoodle.commons.grapheval.calculate.calculations.*;
 import de.flapdoodle.commons.grapheval.calculate.functions.*;
+import de.flapdoodle.commons.grapheval.types.Tuple;
+import de.flapdoodle.commons.types.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class Calculate {
 	private Calculate() {
@@ -97,6 +102,20 @@ public abstract class Calculate {
 
 		public <S> WithSourcesNullable<X, S> aggregating(List<? extends ValueSource<S>> sources) {
 			return new WithSourcesNullable<>(destination, sources);
+		}
+
+		public <T, S> WithSourcesNullable<X, S> aggregating(List<? extends T> sources, Function<? super T, ? extends ValueSource<S>> valueSource) {
+			return aggregating(sources.stream().map(valueSource).collect(Collectors.toList()));
+		}
+
+		public <T, A, B> WithZippingSourcesNullable<X, A, B> zipping(List<? extends Tuple<? extends ValueSource<A>, ? extends ValueSource<B>>> sources) {
+			return new WithZippingSourcesNullable<X, A, B>(destination, sources);
+		}
+
+		public <T, A, B> WithZippingSourcesNullable<X, A, B> zipping(List<? extends T> sources, Function<? super T, ? extends ValueSource<A>> left, Function<? super T, ? extends ValueSource<B>> right) {
+			return zipping(sources.stream()
+				.map(it -> Tuple.of(left.apply(it), right.apply(it)))
+				.collect(Collectors.toList()));
 		}
 	}
 
@@ -422,6 +441,24 @@ public abstract class Calculate {
 
 		public Aggregated<S, X> by(FN1<List<S>, X> aggregation, String description) {
 			return Aggregated.with(sourceList, destination, FN1.withLabel(aggregation, description));
+		}
+	}
+
+	public static class WithZippingSourcesNullable<X, A, B> {
+		private final ValueSink<X> destination;
+		private final List<? extends Tuple<? extends ValueSource<A>, ? extends ValueSource<B>>> sourceList;
+
+		public WithZippingSourcesNullable(ValueSink<X> destination, List<? extends Tuple<? extends ValueSource<A>, ? extends ValueSource<B>>> sourceList) {
+			this.destination = destination;
+			this.sourceList = sourceList;
+		}
+
+		public Zipped<A, B, X> by(FN1<List<Tuple<A, B>>, X> aggregation) {
+			return Zipped.with(sourceList, destination, aggregation);
+		}
+
+		public Zipped<A, B, X> by(FN1<List<Tuple<A, B>>, X> aggregation, String description) {
+			return Zipped.with(sourceList, destination, FN1.withLabel(aggregation, description));
 		}
 	}
 }

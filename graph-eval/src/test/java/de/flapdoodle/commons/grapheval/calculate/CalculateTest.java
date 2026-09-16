@@ -22,6 +22,8 @@ import de.flapdoodle.commons.grapheval.ValueSource;
 import de.flapdoodle.commons.grapheval.calculate.calculations.*;
 import de.flapdoodle.commons.grapheval.calculate.functions.*;
 import de.flapdoodle.commons.grapheval.types.HasHumanReadableLabel;
+import de.flapdoodle.commons.grapheval.types.Tuple;
+import de.flapdoodle.commons.types.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -806,6 +808,81 @@ class CalculateTest {
 
 			@Nullable @Override public String apply(@Nullable List<Integer> values) {
 				return (values != null) ? values.size() + " entries: " + values.stream()
+					.filter(Objects::nonNull)
+					.mapToInt(it -> it)
+					.sum() : null;
+			}
+
+			@Override public String toString() {
+				return SumToString.class.getSimpleName();
+			}
+		}
+
+	}
+
+	/**
+	 * Aggregate Tests
+	 */
+	@Nested
+	class ZippedTests {
+		ValueSource<Integer> a = named("a", Integer.class);
+		ValueSource<String> a_n = named("a_n", String.class);
+		ValueSource<Integer> b = named("b", Integer.class);
+		ValueSource<String> b_n = named("b_n", String.class);
+		ValueSource<Integer> c = named("c", Integer.class);
+		ValueSource<String> c_n = named("c_n", String.class);
+		ValueSink<String> destination = named("dest", String.class);
+
+		@Test
+		void valueAggregating() {
+			Zipped<Integer, String, String> testee = Calculate.value(destination)
+				.zipping(Arrays.asList(Tuple.of(a, a_n), Tuple.of(b, b_n), Tuple.of(c, c_n)))
+				.by(new SumToString());
+
+			assertThat(testee.sources()).containsExactly(a, a_n, b, b_n, c, c_n);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("SumToString");
+
+			assertThat(testee.calculate(valueLookup(
+				MappedValue.of(a, 1), MappedValue.of(b, 2), MappedValue.of(c, 3),
+				MappedValue.of(a_n, "A"), MappedValue.of(b_n, "B"), MappedValue.of(c_n, "C")
+			)))
+				.isEqualTo("3 entries: 6");
+			assertThat(testee.calculate(valueLookup(
+				MappedValue.of(a, 1), MappedValue.of(b, null), MappedValue.of(c, 3),
+				MappedValue.of(a_n, "A"), MappedValue.of(b_n, "B"), MappedValue.of(c_n, "C")
+			)))
+				.isEqualTo("3 entries: 4");
+		}
+
+		@Test
+		void valueAggregatingWithLabel() {
+			Zipped<Integer, String, String> testee = Calculate.value(destination)
+				.zipping(Arrays.asList(Tuple.of(a, a_n), Tuple.of(b, b_n), Tuple.of(c, c_n)))
+				.by(new SumToString(), "label");
+
+			assertThat(testee.sources()).containsExactly(a, a_n, b, b_n, c, c_n);
+			assertThat(testee.destination()).isEqualTo(destination);
+			assertThat(testee.asHumanReadable()).isEqualTo("label");
+
+			assertThat(testee.calculate(valueLookup(
+				MappedValue.of(a, 1), MappedValue.of(b, 2), MappedValue.of(c, 3),
+				MappedValue.of(a_n, "A"), MappedValue.of(b_n, "B"), MappedValue.of(c_n, "C")
+			)))
+				.isEqualTo("3 entries: 6");
+			assertThat(testee.calculate(valueLookup(
+				MappedValue.of(a, 1), MappedValue.of(b, null), MappedValue.of(c, 3),
+				MappedValue.of(a_n, "A"), MappedValue.of(b_n, "B"), MappedValue.of(c_n, "C")
+			)))
+				.isEqualTo("3 entries: 4");
+		}
+
+		class SumToString implements FN1<List<Tuple<Integer, String>>, String> {
+
+			@Nullable @Override public String apply(@Nullable List<Tuple<Integer, String>> values) {
+				return (values != null) ? values.size() + " entries: " + values.stream()
+					.filter(Objects::nonNull)
+					.map(it -> it.first())
 					.filter(Objects::nonNull)
 					.mapToInt(it -> it)
 					.sum() : null;

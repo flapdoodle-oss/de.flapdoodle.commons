@@ -38,6 +38,7 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.readO
 
 @Value.Immutable
 public interface Item extends ChangeableInstance<Item>, IsChangeableInstance<Item, ImmutableItem>, HasRules {
+	IsReadOnlyProperty<Item, Id<Item>> idProperty = readOnly(Item.class, "price", Item::id);
 	IsChangeableProperty<Item, Double> sumProperty = changeable(Item.class, "sum", Item::sum, ImmutableItem::withSum);
 	IsReadOnlyProperty<Item, Double> priceProperty = readOnly(Item.class, "price", Item::price);
 	IsReadOnlyProperty<Item, Integer> quantityProperty = readOnly(Item.class, "quantity", Item::quantity);

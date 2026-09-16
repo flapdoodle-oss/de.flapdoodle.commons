@@ -20,10 +20,8 @@ import de.flapdoodle.commons.grapheval.calculate.Calculate;
 import de.flapdoodle.commons.grapheval.rules.Rules;
 import de.flapdoodle.commons.grapheval.types.Id;
 import de.flapdoodle.commons.grapheval.values.domain.*;
-import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
 import de.flapdoodle.commons.grapheval.values.properties.IsChangeableProperty;
 import de.flapdoodle.commons.grapheval.values.properties.IsReadOnlyProperty;
-import de.flapdoodle.commons.grapheval.values.properties.ReadOnlyProperty;
 import de.flapdoodle.commons.reflection.TypeInfo;
 import de.flapdoodle.commons.types.Lens;
 import de.flapdoodle.commons.types.Maybe;
@@ -36,6 +34,7 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.readO
 
 @Value.Immutable
 public interface Item extends ChangeableInstance<Item>, HasRules {
+	IsReadOnlyProperty<Item, Id<Item>> idProperty = readOnly(Item.class, "id", Item::id);
 	IsChangeableProperty<Item, Double> sumProperty = copyOnChange(Item.class, "sum", Lens.ofProperty(Item::sum)
 		.changeBy(ImmutableItem::copyOf, ImmutableItem::withSum));
 	IsReadOnlyProperty<Item, Double> priceProperty = readOnly(Item.class, "price", Item::price);

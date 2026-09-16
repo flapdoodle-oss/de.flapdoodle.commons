@@ -41,6 +41,7 @@ We need an item class, which stores properties like `quantity` and `price`.
 ```java
 @Value.Immutable
 public interface Item extends ChangeableInstance<Item>, HasRules {
+  IsReadOnlyProperty<Item, Id<Item>> idProperty = readOnly(Item.class, "id", Item::id);
   IsChangeableProperty<Item, Double> sumProperty = copyOnChange(Item.class, "sum", Lens.ofProperty(Item::sum)
     .changeBy(ImmutableItem::copyOf, ImmutableItem::withSum));
   IsReadOnlyProperty<Item, Double> priceProperty = readOnly(Item.class, "price", Item::price);
@@ -104,7 +105,9 @@ We also need a cart class, where all items are stored:
 @Value.Immutable
 public interface Cart extends ChangeableInstance<Cart>, HasRules {
   IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Lens.ofProperty(Cart::sumWithoutTax)
-      .changeBy(ImmutableCart::copyOf, ImmutableCart::withSumWithoutTax));
+    .changeBy(ImmutableCart::copyOf, ImmutableCart::withSumWithoutTax));
+  IsChangeableProperty<Cart, Id<Item>> cheapestItem = copyOnChange(Cart.class, "cheapestItem", Lens.ofProperty(Cart::cheapestItem)
+    .changeBy(ImmutableCart::copyOf, ImmutableCart::withCheapestItem));
 
   @Value.Default
   default Id<Cart> id() {
@@ -118,6 +121,8 @@ public interface Cart extends ChangeableInstance<Cart>, HasRules {
   @Nullable Double tax();
 
   @Nullable Double sum();
+
+  @Nullable Id<Item> cheapestItem();
 
   @Override
   default <T> Cart change(ChangeableValue<?, T> id, T value) {
@@ -160,32 +165,33 @@ public interface Cart extends ChangeableInstance<Cart>, HasRules {
       );
     }
 
-    List<CopyOnChangeValue<Item, Double>> itemSumIds = items().stream()
-      .map(item -> Item.sumProperty.withId(item.id()))
-      .collect(Collectors.toList());
-
     return current
       .add(Calculate
         .value(Cart.sumWithoutTax.withId(id()))
-        .aggregating(itemSumIds)
+        .aggregating(items(), it -> Item.sumProperty.withId(it.id()))
         .by(list -> list.stream()
           .filter(Objects::nonNull)
           .mapToDouble(it -> it)
           .sum(),"sum(...)"))
       .add(Calculate
         .value(min)
-        .aggregating(itemSumIds)
+        .aggregating(items(), it -> Item.sumProperty.withId(it.id()))
         .by(list -> list.stream()
           .filter(Objects::nonNull)
           .mapToDouble(it -> it)
           .min().orElse(0.0),"min"))
       .add(Calculate
         .value(max)
-        .aggregating(itemSumIds)
+        .aggregating(items(), it -> Item.sumProperty.withId(it.id()))
         .by(list -> list.stream()
           .filter(Objects::nonNull)
           .mapToDouble(it -> it)
           .max().orElse(0.0),"max"))
+      .add(Calculate.value(cheapestItem.withId(id()))
+        .zipping(items(), it -> Item.idProperty.withId(it.id()), it -> Item.isCheapestProperty.withId(it.id()))
+        .by(list -> list.stream()
+          .filter(tuple -> tuple.second()==true)
+          .map(Tuple::first).findFirst().orElse(null), "id of filter(isCheapest==true)"))
       ;
   }
 
@@ -232,37 +238,47 @@ digraph "calculation" {
 	"id3"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.quantity() {Item#1}" ];
 	"id4"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.price() {Item#2}" ];
 	"id5"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.quantity() {Item#2}" ];
-	"id6"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#0}" ];
-	"id7"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#0}" ];
-	"id8"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min(Double)->Cart#0" ];
-	"id9"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#1}" ];
-	"id10"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#1}" ];
-	"id11"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#2}" ];
-	"id12"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
-	"id13"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
-	"id14"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
+	"id6"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.id() {Item#0}" ];
+	"id7"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.id() {Item#1}" ];
+	"id8"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.id() {Item#2}" ];
+	"id9"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#0}" ];
+	"id10"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#0}" ];
+	"id11"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min(Double)->Cart#0" ];
+	"id12"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#1}" ];
+	"id13"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#1}" ];
+	"id14"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.sum#rw {Item#2}" ];
+	"id15"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
+	"id16"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
+	"id17"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
+	"id18"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="Cart.cheapestItem#rw {Cart#0}" ];
 
-	"id0" -> "id6";
-	"id1" -> "id6";
-	"id8" -> "id7";
-	"id6" -> "id7";
-	"id2" -> "id9";
-	"id3" -> "id9";
-	"id8" -> "id10";
+	"id0" -> "id9";
+	"id1" -> "id9";
+	"id11" -> "id10";
 	"id9" -> "id10";
-	"id4" -> "id11";
-	"id5" -> "id11";
-	"id8" -> "id12";
-	"id11" -> "id12";
-	"id6" -> "id13";
-	"id9" -> "id13";
+	"id2" -> "id12";
+	"id3" -> "id12";
 	"id11" -> "id13";
-	"id6" -> "id8";
-	"id9" -> "id8";
-	"id11" -> "id8";
-	"id6" -> "id14";
-	"id9" -> "id14";
-	"id11" -> "id14";
+	"id12" -> "id13";
+	"id4" -> "id14";
+	"id5" -> "id14";
+	"id11" -> "id15";
+	"id14" -> "id15";
+	"id9" -> "id16";
+	"id12" -> "id16";
+	"id14" -> "id16";
+	"id9" -> "id11";
+	"id12" -> "id11";
+	"id14" -> "id11";
+	"id9" -> "id17";
+	"id12" -> "id17";
+	"id14" -> "id17";
+	"id6" -> "id18";
+	"id10" -> "id18";
+	"id7" -> "id18";
+	"id13" -> "id18";
+	"id8" -> "id18";
+	"id15" -> "id18";
 }
 
 ```
@@ -287,55 +303,67 @@ digraph "rules" {
 	"id3"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.quantity() {Item#1}" ];
 	"id4"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.price() {Item#2}" ];
 	"id5"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.quantity() {Item#2}" ];
-	"id6"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#0}" ];
-	"id7"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
-	"id8"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#0}" ];
-	"id9"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
-	"id10"[ fillcolor="gray81", style="filled", shape="rectangle", label="min(Double)->Cart#0" ];
-	"id11"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#1}" ];
-	"id12"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
-	"id13"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#1}" ];
-	"id14"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
-	"id15"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#2}" ];
-	"id16"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
-	"id17"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
-	"id18"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
-	"id19"[ fillcolor="gray81", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
-	"id20"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="sum(...)" ];
-	"id21"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min" ];
-	"id22"[ fillcolor="gray81", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
-	"id23"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="max" ];
+	"id6"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.id() {Item#0}" ];
+	"id7"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.id() {Item#1}" ];
+	"id8"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.id() {Item#2}" ];
+	"id9"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#0}" ];
+	"id10"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
+	"id11"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#0}" ];
+	"id12"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
+	"id13"[ fillcolor="gray81", style="filled", shape="rectangle", label="min(Double)->Cart#0" ];
+	"id14"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#1}" ];
+	"id15"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
+	"id16"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#1}" ];
+	"id17"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
+	"id18"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.sum#rw {Item#2}" ];
+	"id19"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="price*quantity" ];
+	"id20"[ fillcolor="gray81", style="filled", shape="rectangle", label="Item.isCheapest#rw {Item#2}" ];
+	"id21"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min==sum" ];
+	"id22"[ fillcolor="gray81", style="filled", shape="rectangle", label="Cart.sumWithoutTax#rw {Cart#0}" ];
+	"id23"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="sum(...)" ];
+	"id24"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="min" ];
+	"id25"[ fillcolor="gray81", style="filled", shape="rectangle", label="max(Double)->Cart#0" ];
+	"id26"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="max" ];
+	"id27"[ fillcolor="gray81", style="filled", shape="rectangle", label="Cart.cheapestItem#rw {Cart#0}" ];
+	"id28"[ fillcolor="lightskyblue", style="filled", shape="rectangle", label="id of filter(isCheapest==true)" ];
 
-	"id7" -> "id6";
-	"id0" -> "id7";
-	"id1" -> "id7";
-	"id9" -> "id8";
 	"id10" -> "id9";
-	"id6" -> "id9";
+	"id0" -> "id10";
+	"id1" -> "id10";
 	"id12" -> "id11";
-	"id2" -> "id12";
-	"id3" -> "id12";
-	"id14" -> "id13";
-	"id10" -> "id14";
-	"id11" -> "id14";
-	"id16" -> "id15";
-	"id4" -> "id16";
-	"id5" -> "id16";
-	"id18" -> "id17";
-	"id10" -> "id18";
-	"id15" -> "id18";
-	"id20" -> "id19";
-	"id6" -> "id20";
-	"id11" -> "id20";
-	"id15" -> "id20";
-	"id21" -> "id10";
-	"id6" -> "id21";
-	"id11" -> "id21";
-	"id15" -> "id21";
+	"id13" -> "id12";
+	"id9" -> "id12";
+	"id15" -> "id14";
+	"id2" -> "id15";
+	"id3" -> "id15";
+	"id17" -> "id16";
+	"id13" -> "id17";
+	"id14" -> "id17";
+	"id19" -> "id18";
+	"id4" -> "id19";
+	"id5" -> "id19";
+	"id21" -> "id20";
+	"id13" -> "id21";
+	"id18" -> "id21";
 	"id23" -> "id22";
-	"id6" -> "id23";
-	"id11" -> "id23";
-	"id15" -> "id23";
+	"id9" -> "id23";
+	"id14" -> "id23";
+	"id18" -> "id23";
+	"id24" -> "id13";
+	"id9" -> "id24";
+	"id14" -> "id24";
+	"id18" -> "id24";
+	"id26" -> "id25";
+	"id9" -> "id26";
+	"id14" -> "id26";
+	"id18" -> "id26";
+	"id28" -> "id27";
+	"id6" -> "id28";
+	"id11" -> "id28";
+	"id7" -> "id28";
+	"id16" -> "id28";
+	"id8" -> "id28";
+	"id20" -> "id28";
 }
 
 ```
@@ -454,4 +482,6 @@ assertThat(updated.items().get(2).isCheapest()).isFalse();
 
 assertThat(updated.sumWithoutTax())
   .isEqualTo(2 * 10.5 + 9.95 + 10 * 2.55);
+assertThat(updated.cheapestItem())
+  .isEqualTo(updated.items().get(1).id());
 ```

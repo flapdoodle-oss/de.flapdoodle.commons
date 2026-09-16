@@ -14,46 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.commons.types;
+package de.flapdoodle.commons.grapheval.types;
 
-import de.flapdoodle.commons.checks.Preconditions;
 import de.flapdoodle.commons.reflection.TypeInfo;
+import de.flapdoodle.commons.types.ImmutablePair;
+import de.flapdoodle.commons.types.Nullable;
+import de.flapdoodle.commons.types.PairTypeInfo;
 import org.immutables.value.Value;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 @Value.Immutable
-public abstract class Pair<FIRST, SECOND> {
+public abstract class Tuple<FIRST, SECOND> {
 	@Value.Parameter
+	@Nullable
 	public abstract FIRST first();
 	@Value.Parameter
+	@Nullable
 	public abstract SECOND second();
 
-	public <T> Pair<T, SECOND> mapFirst(Function<FIRST, T> transformation) {
+	public <T> Tuple<T, SECOND> mapFirst(Function<FIRST, T> transformation) {
 		return of(transformation.apply(first()), second());
 	}
 
-	public <T> Pair<FIRST, T> mapSecond(Function<SECOND, T> transformation) {
+	public <T> Tuple<FIRST, T> mapSecond(Function<SECOND, T> transformation) {
 		return of(first(), transformation.apply(second()));
 	}
 
-	public <FIRST_MAPPED,SECOND_MAPPED> Pair<FIRST_MAPPED, SECOND_MAPPED> map(
+	public <FIRST_MAPPED,SECOND_MAPPED> Tuple<FIRST_MAPPED, SECOND_MAPPED> map(
 		Function<FIRST, FIRST_MAPPED> first,
 		Function<SECOND, SECOND_MAPPED> second
 	) {
 		return mapFirst(first).mapSecond(second);
 	}
 
-	public static <FIRST, SECOND> Pair<FIRST,SECOND> of(FIRST first, SECOND second) {
-		return ImmutablePair.of(first, second);
+	public static <FIRST, SECOND> Tuple<FIRST,SECOND> of(@Nullable FIRST first, @Nullable SECOND second) {
+		return ImmutableTuple.of(first, second);
 	}
 
-	public static <FIRST, SECOND> TypeInfo<Pair<FIRST, SECOND>> typeInfo(TypeInfo<FIRST> first, TypeInfo<SECOND> second) {
-		return PairTypeInfo.of(first, second);
+	public static <FIRST, SECOND> TypeInfo<Tuple<FIRST, SECOND>> typeInfo(TypeInfo<FIRST> first, TypeInfo<SECOND> second) {
+		return TupleTypeInfo.of(first, second);
 	}
 
-	public static <FIRST, SECOND> TypeInfo<Pair<FIRST, SECOND>> typeInfo(Class<FIRST> first, Class<SECOND> second) {
-		return PairTypeInfo.of(first, second);
+	public static <FIRST, SECOND> TypeInfo<Tuple<FIRST, SECOND>> typeInfo(Class<FIRST> first, Class<SECOND> second) {
+		return TupleTypeInfo.of(first, second);
 	}
 }

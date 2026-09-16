@@ -108,6 +108,8 @@ public class HowToCalculateChangeableInstanceTest extends AbstractHowToTest {
 
 		assertThat(updated.sumWithoutTax())
 			.isEqualTo(2 * 10.5 + 9.95 + 10 * 2.55);
+		assertThat(updated.cheapestItem())
+			.isEqualTo(updated.items().get(1).id());
 		recording.end();
 	}
 }

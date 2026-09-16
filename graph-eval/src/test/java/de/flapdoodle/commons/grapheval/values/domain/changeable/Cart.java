@@ -19,6 +19,7 @@ package de.flapdoodle.commons.grapheval.values.domain.changeable;
 import de.flapdoodle.commons.grapheval.calculate.Calculate;
 import de.flapdoodle.commons.grapheval.rules.Rules;
 import de.flapdoodle.commons.grapheval.types.Id;
+import de.flapdoodle.commons.grapheval.types.Tuple;
 import de.flapdoodle.commons.grapheval.values.Related;
 import de.flapdoodle.commons.grapheval.values.domain.*;
 import de.flapdoodle.commons.grapheval.values.properties.CopyOnChangeProperty;
@@ -39,7 +40,9 @@ import static de.flapdoodle.commons.grapheval.values.properties.Properties.copyO
 @Value.Immutable
 public interface Cart extends ChangeableInstance<Cart>, HasRules {
 	IsChangeableProperty<Cart, Double> sumWithoutTax = copyOnChange(Cart.class, "sumWithoutTax", Lens.ofProperty(Cart::sumWithoutTax)
-			.changeBy(ImmutableCart::copyOf, ImmutableCart::withSumWithoutTax));
+		.changeBy(ImmutableCart::copyOf, ImmutableCart::withSumWithoutTax));
+	IsChangeableProperty<Cart, Id<Item>> cheapestItem = copyOnChange(Cart.class, "cheapestItem", Lens.ofProperty(Cart::cheapestItem)
+		.changeBy(ImmutableCart::copyOf, ImmutableCart::withCheapestItem));
 
 	@Value.Default
 	default Id<Cart> id() {
@@ -53,6 +56,8 @@ public interface Cart extends ChangeableInstance<Cart>, HasRules {
 	@Nullable Double tax();
 
 	@Nullable Double sum();
+
+	@Nullable Id<Item> cheapestItem();
 
 	@Override
 	default <T> Cart change(ChangeableValue<?, T> id, T value) {
@@ -95,32 +100,33 @@ public interface Cart extends ChangeableInstance<Cart>, HasRules {
 			);
 		}
 
-		List<CopyOnChangeValue<Item, Double>> itemSumIds = items().stream()
-			.map(item -> Item.sumProperty.withId(item.id()))
-			.collect(Collectors.toList());
-
 		return current
 			.add(Calculate
 				.value(Cart.sumWithoutTax.withId(id()))
-				.aggregating(itemSumIds)
+				.aggregating(items(), it -> Item.sumProperty.withId(it.id()))
 				.by(list -> list.stream()
 					.filter(Objects::nonNull)
 					.mapToDouble(it -> it)
 					.sum(),"sum(...)"))
 			.add(Calculate
 				.value(min)
-				.aggregating(itemSumIds)
+				.aggregating(items(), it -> Item.sumProperty.withId(it.id()))
 				.by(list -> list.stream()
 					.filter(Objects::nonNull)
 					.mapToDouble(it -> it)
 					.min().orElse(0.0),"min"))
 			.add(Calculate
 				.value(max)
-				.aggregating(itemSumIds)
+				.aggregating(items(), it -> Item.sumProperty.withId(it.id()))
 				.by(list -> list.stream()
 					.filter(Objects::nonNull)
 					.mapToDouble(it -> it)
 					.max().orElse(0.0),"max"))
+			.add(Calculate.value(cheapestItem.withId(id()))
+				.zipping(items(), it -> Item.idProperty.withId(it.id()), it -> Item.isCheapestProperty.withId(it.id()))
+				.by(list -> list.stream()
+					.filter(tuple -> tuple.second()==true)
+					.map(Tuple::first).findFirst().orElse(null), "id of filter(isCheapest==true)"))
 			;
 	}
 
